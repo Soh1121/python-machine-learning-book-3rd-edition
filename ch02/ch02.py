@@ -2,7 +2,7 @@ import numpy as np
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
-
+from matplotlib.colors import ListedColormap
 
 class Perceptron:
     def __init__(self, eta=0.01, n_iter=50, random_state=1):
@@ -30,6 +30,23 @@ class Perceptron:
 
     def predict(self, X):   # 活性化関数はステップ関数
         return np.where(0.0 <= self.net_input(X), 1, -1)
+
+
+def plot_decision_region(X, y, classifier, resolution=0.02):
+    # マーカーとカラーマップの準備
+    markers = ["s", "x", "o", "^", "v"]
+    colors = ["red", "blue", "lightgreen", "gray", "cyan"]
+    cmap = ListedColormap(colors[:len(np.unique(y))])
+
+    # 決定領域のプロット
+    x1_min, x1_max = X[: 0].min() - 1, X[:, 0].max() + 1
+    x2_min, x2_max = X[: 1].min() - 1, X[:, 1].max() + 1
+
+    # グリッドポイントの生成
+    xx1, xx2 = np.meshgrid(
+        np.arange(x1_min, x1_max, resolution),
+        np.arange(x2_min, x2_max, resolution))
+
 
 v1 = np.array([1, 2, 3])
 v2 = 0.5 * v1
@@ -73,11 +90,12 @@ ppn = Perceptron(eta=0.1, n_iter=10)
 ppn.fit(X, y)
 
 # エポックと誤分類の関係を表す折れ線グラフをプロット
-plt.plot(range(1, len(ppn.errors_) + 1), ppn.errors_, marker="o")
+# plt.plot(range(1, len(ppn.errors_) + 1), ppn.errors_, marker="o")
 
 #  軸のラベルの設定
-plt.xlabel = "Epochs"
-plt.ylabel = "Number of update"
+# plt.xlabel = "Epochs"
+# plt.ylabel = "Number of update"
 
 # 図の表示
-plt.show()
+# plt.show()
+
