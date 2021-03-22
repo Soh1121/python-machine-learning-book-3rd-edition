@@ -22,7 +22,7 @@ class Perceptron:
                 self.w_[1:] += update * xi
                 self.w_[0] += update
                 errors += int(update != 0.0)
-        self.errors_.append(errors)
+            self.errors_.append(errors)
         return self
 
     def net_input(self, X):
@@ -59,9 +59,25 @@ y = np.where(y == "Iris-versicolor", 1, -1)
 X = df.iloc[:100, [0, 2]].values
 # print(x)
 
-plt.scatter(X[:50, 0], X[:50, 1], color="red", marker="o", label="setosa")
-plt.scatter(X[50:100, 0], X[50:100, 1], color="blue", marker="x", label="versicolor")
-plt.xlabel="sepal length [cm]"
-plt.ylabel="sepal width [cm]"
-plt.legend(loc="upper left")
+# plt.scatter(X[:50, 0], X[:50, 1], color="red", marker="o", label="setosa")
+# plt.scatter(X[50:100, 0], X[50:100, 1], color="blue", marker="x", label="versicolor")
+# plt.xlabel="sepal length [cm]"
+# plt.ylabel="sepal width [cm]"
+# plt.legend(loc="upper left")
+# plt.show()
+
+# パーセプトロンオブジェクトの生成（インスタンス化）
+ppn = Perceptron(eta=0.1, n_iter=10)
+
+# 訓練データへのモデルの適合
+ppn.fit(X, y)
+
+# エポックと誤分類の関係を表す折れ線グラフをプロット
+plt.plot(range(1, len(ppn.errors_) + 1), ppn.errors_, marker="o")
+
+#  軸のラベルの設定
+plt.xlabel = "Epochs"
+plt.ylabel = "Number of update"
+
+# 図の表示
 plt.show()
