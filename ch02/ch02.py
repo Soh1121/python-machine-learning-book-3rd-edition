@@ -47,9 +47,9 @@ class AdalineGD(object):
             net_input = self.net_input(X)
             output = self.activation(net_input)
             errors = y - output
-            self.w_[1:] += self.eta * np.dot(X, errors)
+            self.w_[1:] += self.eta * X.T.dot(errors)
             self.w_[0] += self.eta * errors.sum()
-            cost = (errors ** 2).sum / 2.0
+            cost = (errors ** 2).sum() / 2.0
             self.cost_.append(cost)
         return self
 
@@ -167,3 +167,24 @@ ppn.fit(X, y)
 # # 図の表示
 # plt.show()
 
+# 描画領域を1行2列に分割
+fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 4))
+# 勾配降下法によるADALINEの学習をada1として実行
+ada1 = AdalineGD(eta=0.01, n_iter=10).fit(X, y)
+# エポック数とコストの関係を表す折れ線グラフをプロット（縦軸のコストは常用対数）
+ax[0].plot(range(1, len(ada1.cost_) + 1), np.log10(ada1.cost_), marker="o")
+# 軸のラベルの設定
+ax[0].set_xlabel = "Epochs"
+ax[0].set_ylabel = "log(Sum-squared-error"
+# タイトルの設定
+ax[0].set_title = "Adaline - Learning rate 0.01"
+# 勾配降下法によるADALINEの学習（学習率 eta=0.0001）をada2として実行
+ada2 = AdalineGD(eta=0.0001, n_iter=10).fit(X, y)
+# エポック数とコストの関係を表す折れ線グラフをプロット（縦軸のコストは常用対数）
+ax[1].plot(range(1, len(ada2.cost_) + 1), np.log10(ada2.cost_), marker="o")
+# 軸のラベルの設定
+ax[1].set_xlabel = "Epochs"
+ax[1].set_ylabel = "log(Sum-squared-error"
+# タイトルの設定
+ax[1].set_title = "Adaline - Learning rate 0.0001"
+plt.show()
