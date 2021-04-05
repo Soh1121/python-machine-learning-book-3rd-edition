@@ -63,6 +63,31 @@ class AdalineGD(object):
         return np.where(0.0 <= self.activation(self.net_input(X)), 1, -1)
 
 
+class AdalinSGD(object):
+    def __init__(self, eta=0.01, n_iter=10, shuffle=True, random_state=None):
+        self.eta = eta
+        self.n_iter = n_iter
+        self.shuffle = shuffle
+        self.random_state = random_state
+        self.w_initialized = False
+
+    def fit(self, X, y):
+        self._initialize_weight(X.shape[1])
+        self.cost_ = []
+        for i in range(self.n_iter):
+            if self.shuffle:
+                X, y = self._shuffle(X, y)
+
+    def _initialize_weight(self, m):
+        self.rgen = np.random.RandomState(self.random_state)
+        self.w_ = self.rgen.normal(loc=0.0, scale=0.01, size=1 + m)
+        self.w_initialized = True
+
+    def _shuffle(self, X, y):
+        r = self.rgen.permutation(len(y))
+        return X[r], y[r]
+
+
 def plot_decision_region(X, y, classifier, resolution=0.02):
     # マーカーとカラーマップの準備
     markers = ["s", "x", "o", "^", "v"]
@@ -194,29 +219,29 @@ X_std = np.copy(X)
 # 各列の標準化
 X_std[:, 0] = (X[:, 0] - X[:, 0].mean()) / X[:, 0].std()
 X_std[:, 1] = (X[:, 1] - X[:, 1].mean()) / X[:, 1].std()
-# print(X_std[:5, :])
+# # print(X_std[:5, :])
 
-# 勾配降下法によるADALINEの学習（標準化後、学習率eta=0.01）
-ada_gd = AdalineGD(n_iter=15, eta=0.01)
-# モデルの適合
-ada_gd.fit(X_std, y)
-# 境界領域のプロット
-plot_decision_region(X_std, y, classifier=ada_gd)
-# タイトルの設定
-plt.title("Adaline - Gradient Descent")
-# 軸のラベルの設定
-plt.xlabel("sepal length [standardized]")
-plt.ylabel("petal length [standardized]")
-# 凡例の設定
-plt.legend(loc="upper left")
-# 図の表示
-plt.tight_layout()
-plt.show()
-# エポック数とコストの関係を表す折れ線グラフのプロット
-plt.plot(range(1, len(ada_gd.cost_) + 1), ada_gd.cost_, marker="o")
-# 軸のラベルの設定
-plt.xlabel("Epochs")
-plt.ylabel("Sum-squared-error")
-# 図の表示
-plt.tight_layout()
-plt.show()
+# # 勾配降下法によるADALINEの学習（標準化後、学習率eta=0.01）
+# ada_gd = AdalineGD(n_iter=15, eta=0.01)
+# # モデルの適合
+# ada_gd.fit(X_std, y)
+# # 境界領域のプロット
+# plot_decision_region(X_std, y, classifier=ada_gd)
+# # タイトルの設定
+# plt.title("Adaline - Gradient Descent")
+# # 軸のラベルの設定
+# plt.xlabel("sepal length [standardized]")
+# plt.ylabel("petal length [standardized]")
+# # 凡例の設定
+# plt.legend(loc="upper left")
+# # 図の表示
+# plt.tight_layout()
+# plt.show()
+# # エポック数とコストの関係を表す折れ線グラフのプロット
+# plt.plot(range(1, len(ada_gd.cost_) + 1), ada_gd.cost_, marker="o")
+# # 軸のラベルの設定
+# plt.xlabel("Epochs")
+# plt.ylabel("Sum-squared-error")
+# # 図の表示
+# plt.tight_layout()
+# plt.show()
