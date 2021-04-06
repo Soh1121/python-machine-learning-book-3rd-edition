@@ -77,6 +77,22 @@ class AdalinSGD(object):
         for i in range(self.n_iter):
             if self.shuffle:
                 X, y = self._shuffle(X, y)
+            cost = []
+            for xi, target in zip(X, y):
+                cost.append(self._update_weights(xi, target))
+            avg_cost = sum(cost) / len(y)
+            self.cost_.append(avg_cost)
+        return self
+
+    def partial_fit(self, X, y):
+        if not self.w_initialized:
+            self._initialize_weight(X.shape[1])
+        if y.ravel().shape[0] > 1:
+            for xi, target in zip(X, y):
+                self._update_weight(xi, target)
+        else:
+            self._update_weight(X, y)
+        return self
 
     def _initialize_weight(self, m):
         self.rgen = np.random.RandomState(self.random_state)
@@ -86,6 +102,23 @@ class AdalinSGD(object):
     def _shuffle(self, X, y):
         r = self.rgen.permutation(len(y))
         return X[r], y[r]
+
+    def _update_weight(self, xi, target):
+        output = self.activation(xi)
+        error = target - output
+        self.w_[1:] += self.eta * xi.dot(error)
+        self.w_[0] += self.eta * error
+        cost = 0.5 * error ** 2
+        return cost
+
+    def activation(self, X):
+        return X
+
+    def net_input(self, X):
+        return np.dot(X, self.w_[1:]) + self.w_[0]
+
+    def predict(self, X):
+        return np.where(0.0 <= self.activation(self.net_input(X)), 1, -1)
 
 
 def plot_decision_region(X, y, classifier, resolution=0.02):
