@@ -295,3 +295,11 @@ plt.legend(loc="upper left")
 # プロットの表示
 plt.tight_layout()
 plt.show()
+# エポックとコストの折れ線グラフのプロット
+plt.plot(range(1, len(ada_sgd.cost_) + 1), ada_sgd.cost_, marker="o")
+# 軸のラベルの設定
+plt.xlabel("Epochs")
+plt.ylabel("Average Cost")
+# プロットの表示
+plt.tight_layout()
+plt.show()
