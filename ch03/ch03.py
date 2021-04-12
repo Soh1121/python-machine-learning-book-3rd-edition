@@ -2,6 +2,7 @@ from sklearn import datasets
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import Perceptron
 
 
 iris = datasets.load_iris()
@@ -28,3 +29,8 @@ sc.fit(X_train)
 # 平均と標準偏差を用いて標準化
 X_train_std = sc.transform(X_train)
 X_test_std = sc.transform(X_test)
+
+# 学習率eta0.1、乱数シードrandom_state1でパーセプトロンのインスタンスをppn変数に生成
+ppn = Perceptron(eta0=0.1, random_state=1)
+# 訓練データをモデルに適合させる
+ppn.fit(X_train_std, y_train)
