@@ -9,3 +9,12 @@ y = iris.target
 
 # 全体の30%がテストデータとなるよう訓練データとテストデータに分割
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1, stratify=y)
+
+# データセットのクラスラベルを確認
+print("Label counts in y: ", np.bincount(y))
+
+# 訓練データセットのクラスラベルを確認
+print("Label counts in y_train: ", np.bincount(y_train))
+
+# テストデータセットのクラスラベルを確認
+print("Label counts in y_test", np.bincount(y_test))
