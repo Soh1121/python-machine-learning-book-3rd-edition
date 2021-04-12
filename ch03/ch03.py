@@ -34,3 +34,8 @@ X_test_std = sc.transform(X_test)
 ppn = Perceptron(eta0=0.1, random_state=1)
 # 訓練データをモデルに適合させる
 ppn.fit(X_train_std, y_train)
+
+# テストデータで予測を実施
+y_pred = ppn.predict(X_test_std)
+# 誤分類データの個数を表示
+print("Misclassified examples: %d" % (y_test != y_pred).sum())
