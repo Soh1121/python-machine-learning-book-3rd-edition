@@ -47,7 +47,7 @@ def plot_decision_region(X, y, classifier, resolution=0.02, test_idx=None):
                     edgecolor="black")
     if test_idx:
         X_test, y_test = X[test_idx, :], y[test_idx]
-        plt.scatter(X_test, y_test, c="", edgecolor="black", alpha=1.0, linewidth=1, marker="o", s=100, label="test set")
+        plt.scatter(X_test[:, 0], X_test[:, 1], c="", edgecolor="black", alpha=1.0, linewidth=1, marker="o", s=100, label="test set")
 
 
 iris = datasets.load_iris()
@@ -90,3 +90,17 @@ y_pred = ppn.predict(X_test_std)
 
 # 分類機に定義されているscoreメソッドを使って正解率を表示する
 # print("Accuracy: %.3f" % ppn.score(X_test_std, y_test))
+
+# 訓練データとテストデータの特徴量を行方向に結合し、変数X_combined_stdに代入
+X_combined_std = np.vstack((X_train_std, X_test_std))
+# 訓練データとテストデータのクラスラベルを結合し、変数y_combinedに代入
+y_combined = np.hstack((y_train, y_test))
+# 決定境界のプロット
+plot_decision_region(X=X_combined_std, y=y_combined, classifier=ppn, test_idx=range(105, 150))
+# 軸のラベルの設定
+plt.xlabel = "petal length [standardized]"
+plt.ylabel = "petal width [standardized]"
+# 凡例の設定
+plt.legend(loc="upper left")
+# グラフを表示
+plt.show()
