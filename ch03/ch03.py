@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import Perceptron
+from sklearn.metrics import accuracy_score
 
 
 iris = datasets.load_iris()
@@ -38,4 +39,10 @@ ppn.fit(X_train_std, y_train)
 # テストデータで予測を実施
 y_pred = ppn.predict(X_test_std)
 # 誤分類データの個数を表示
-print("Misclassified examples: %d" % (y_test != y_pred).sum())
+# print("Misclassified examples: %d" % (y_test != y_pred).sum())
+
+# 分類の正解率を表示
+print("Accuracy: %.3f" % accuracy_score(y_test, y_pred))
+
+# 分類機に定義されているscoreメソッドを使って正解率を表示する
+print("Accuracy: %.3f" % ppn.score(X_test_std, y_test))
