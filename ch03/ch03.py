@@ -6,6 +6,8 @@ from sklearn.linear_model import Perceptron
 from sklearn.metrics import accuracy_score
 from matplotlib.colors import ListedColormap
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+mpl.style.use("ggplot")
 
 
 def plot_decision_region(X, y, classifier, resolution=0.02, test_idx=None):
@@ -48,6 +50,10 @@ def plot_decision_region(X, y, classifier, resolution=0.02, test_idx=None):
     if test_idx:
         X_test, y_test = X[test_idx, :], y[test_idx]
         plt.scatter(X_test[:, 0], X_test[:, 1], c="", edgecolor="black", alpha=1.0, linewidth=1, marker="o", s=100, label="test set")
+
+
+def sigmoid(z):
+    return 1.0 / (1.0 + np.exp(-z))
 
 
 iris = datasets.load_iris()
@@ -96,11 +102,36 @@ X_combined_std = np.vstack((X_train_std, X_test_std))
 # 訓練データとテストデータのクラスラベルを結合し、変数y_combinedに代入
 y_combined = np.hstack((y_train, y_test))
 # 決定境界のプロット
-plot_decision_region(X=X_combined_std, y=y_combined, classifier=ppn, test_idx=range(105, 150))
-# 軸のラベルの設定
-plt.xlabel = "petal length [standardized]"
-plt.ylabel = "petal width [standardized]"
-# 凡例の設定
-plt.legend(loc="upper left")
+# plot_decision_region(X=X_combined_std, y=y_combined, classifier=ppn, test_idx=range(105, 150))
+# # 軸のラベルの設定
+# plt.xlabel = "petal length [standardized]"
+# plt.ylabel = "petal width [standardized]"
+# # 凡例の設定
+# plt.legend(loc="upper left")
+# # グラフを表示
+# plt.show()
+
+
+# -7以上7未満の範囲にある値のシグモイド関数をプロット
+# 0.1間隔で-7以上7未満のデータを生成し変数zに代入
+z = np.arange(-7.0, 7.0, 0.1)
+# 生成したデータでシグモイド関数を実行し、変数phi_zに代入
+phi_z = sigmoid(z)
+# 元のデータとシグモイド関数の出力を線グラフでプロット
+plt.plot(z, phi_z)
+# z = 0 に垂直線を追加する
+plt.axvline(color="k")
+# y軸の上限／下限を設定
+plt.ylim(-0.1, 1.1)
+#  軸のラベルを設定
+plt.xlabel("z")
+plt.ylabel("$\phi(z)$")
+# y軸の目盛りを追加
+plt.yticks([0.0, 0.5, 1.0])
+# Axesクラスのオブジェクトを取得
+ax = plt.gca()
+# y軸の目盛りに合わせて水平グリッド線を追加
+ax.yaxis.grid(True)
 # グラフを表示
+plt.tight_layout()
 plt.show()
