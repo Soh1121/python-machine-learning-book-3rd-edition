@@ -56,6 +56,14 @@ def sigmoid(z):
     return 1.0 / (1.0 + np.exp(-z))
 
 
+def cost_1(z):
+    return -np.log(sigmoid(z))
+
+
+def cost_0(z):
+    return -np.log(1 - sigmoid(z))
+
+
 iris = datasets.load_iris()
 X = iris.data[:, [2, 3]]
 y = iris.target
@@ -112,26 +120,51 @@ y_combined = np.hstack((y_train, y_test))
 # plt.show()
 
 
-# -7以上7未満の範囲にある値のシグモイド関数をプロット
-# 0.1間隔で-7以上7未満のデータを生成し変数zに代入
-z = np.arange(-7.0, 7.0, 0.1)
-# 生成したデータでシグモイド関数を実行し、変数phi_zに代入
+# # -7以上7未満の範囲にある値のシグモイド関数をプロット
+# # 0.1間隔で-7以上7未満のデータを生成し変数zに代入
+# z = np.arange(-7.0, 7.0, 0.1)
+# # 生成したデータでシグモイド関数を実行し、変数phi_zに代入
+# phi_z = sigmoid(z)
+# # 元のデータとシグモイド関数の出力を線グラフでプロット
+# plt.plot(z, phi_z)
+# # z = 0 に垂直線を追加する
+# plt.axvline(color="k")
+# # y軸の上限／下限を設定
+# plt.ylim(-0.1, 1.1)
+# #  軸のラベルを設定
+# plt.xlabel("z")
+# plt.ylabel("$\phi(z)$")
+# # y軸の目盛りを追加
+# plt.yticks([0.0, 0.5, 1.0])
+# # Axesクラスのオブジェクトを取得
+# ax = plt.gca()
+# # y軸の目盛りに合わせて水平グリッド線を追加
+# ax.yaxis.grid(True)
+# # グラフを表示
+# plt.tight_layout()
+# plt.show()
+
+# シグモイド関数の様々な値に対する単一の訓練データの分類コストを示すグラフをプロット
+# 0.1間隔で-10以上10未満のデータを生成し、変数zへ代入
+z = np.arange(-10, 10, 0.1)
+# シグモイド関数を実行し、変数phi_zへ代入
 phi_z = sigmoid(z)
-# 元のデータとシグモイド関数の出力を線グラフでプロット
-plt.plot(z, phi_z)
-# z = 0 に垂直線を追加する
-plt.axvline(color="k")
-# y軸の上限／下限を設定
-plt.ylim(-0.1, 1.1)
-#  軸のラベルを設定
-plt.xlabel("z")
-plt.ylabel("$\phi(z)$")
-# y軸の目盛りを追加
-plt.yticks([0.0, 0.5, 1.0])
-# Axesクラスのオブジェクトを取得
-ax = plt.gca()
-# y軸の目盛りに合わせて水平グリッド線を追加
-ax.yaxis.grid(True)
+# y=1のコストを計算する関数を実行し、変数c1へ代入
+c1 = [cost_1(x) for x in z]
+# 結果をプロット
+plt.plot(phi_z, c1, label="J(W) if y=1")
+# y=0のコストを計算する関数を実行し、変数c0へ代入
+c0 = [cost_0(x) for x in z]
+# 結果をプロット
+plt.plot(phi_z, c0, label="J(W) if y=0")
+# x軸とy軸の上限 / 下限を設定
+plt.ylim(0.0, 5.1)
+plt.xlim(0, 1)
+# 軸のラベルを設定
+plt.xlabel("$\phi$(z)")
+plt.ylabel("J(w)")
+# 凡例を設定
+plt.legend(loc="upper center")
 # グラフを表示
 plt.tight_layout()
 plt.show()
