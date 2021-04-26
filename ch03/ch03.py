@@ -10,6 +10,37 @@ import matplotlib as mpl
 mpl.style.use("ggplot")
 
 
+# ロジスティック回帰の実装
+class LogisticRegressionGD(object):
+    def __init__(self, eta=0.05, n_iter=100, random_state=1):
+        self.eta = eta
+        self.n_iter = n_iter
+        self.random_state = random_state
+
+    def fit(self, X, y):
+        rgen = np.random.RandomState(self.random_state)
+        self.w_ = rgen.normal(loc=0, scale=0.01, size=1 + X.shape[1])
+        self.cost_ = []
+        for i in range(self.n_iter):
+            net_input = self.net_input(X)
+            output = self.activation(net_input)
+            errors = y - output
+            self.w_[1:] += self.eta * X.T.dot(errors)
+            self.w_[0] += self.eta * errors.sum()
+            cost = -y.dot(np.log(output)) -(1 - y).dot(np.log(1 - output))
+            self.cost_.append(cost)
+        return self
+
+    def net_input(self, X):
+        return np.dot(X, self.w_[1:]) + self.w_[0]
+
+    def activation(self, z):
+        return 1.0 / (1.0 + np.exp(-np.clip(z, -250, 250)))
+
+    def predict(self, X):
+        return np.where(0.0 <= self.net_input(X), 1, 0)
+
+
 def plot_decision_region(X, y, classifier, resolution=0.02, test_idx=None):
     # マーカーとカラーマップの準備
     markers = ["s", "x", "o", "^", "v"]
@@ -144,27 +175,27 @@ y_combined = np.hstack((y_train, y_test))
 # plt.tight_layout()
 # plt.show()
 
-# シグモイド関数の様々な値に対する単一の訓練データの分類コストを示すグラフをプロット
-# 0.1間隔で-10以上10未満のデータを生成し、変数zへ代入
-z = np.arange(-10, 10, 0.1)
-# シグモイド関数を実行し、変数phi_zへ代入
-phi_z = sigmoid(z)
-# y=1のコストを計算する関数を実行し、変数c1へ代入
-c1 = [cost_1(x) for x in z]
-# 結果をプロット
-plt.plot(phi_z, c1, label="J(W) if y=1")
-# y=0のコストを計算する関数を実行し、変数c0へ代入
-c0 = [cost_0(x) for x in z]
-# 結果をプロット
-plt.plot(phi_z, c0, label="J(W) if y=0")
-# x軸とy軸の上限 / 下限を設定
-plt.ylim(0.0, 5.1)
-plt.xlim(0, 1)
-# 軸のラベルを設定
-plt.xlabel("$\phi$(z)")
-plt.ylabel("J(w)")
-# 凡例を設定
-plt.legend(loc="upper center")
-# グラフを表示
-plt.tight_layout()
-plt.show()
+# # シグモイド関数の様々な値に対する単一の訓練データの分類コストを示すグラフをプロット
+# # 0.1間隔で-10以上10未満のデータを生成し、変数zへ代入
+# z = np.arange(-10, 10, 0.1)
+# # シグモイド関数を実行し、変数phi_zへ代入
+# phi_z = sigmoid(z)
+# # y=1のコストを計算する関数を実行し、変数c1へ代入
+# c1 = [cost_1(x) for x in z]
+# # 結果をプロット
+# plt.plot(phi_z, c1, label="J(W) if y=1")
+# # y=0のコストを計算する関数を実行し、変数c0へ代入
+# c0 = [cost_0(x) for x in z]
+# # 結果をプロット
+# plt.plot(phi_z, c0, label="J(W) if y=0")
+# # x軸とy軸の上限 / 下限を設定
+# plt.ylim(0.0, 5.1)
+# plt.xlim(0, 1)
+# # 軸のラベルを設定
+# plt.xlabel("$\phi$(z)")
+# plt.ylabel("J(w)")
+# # 凡例を設定
+# plt.legend(loc="upper center")
+# # グラフを表示
+# plt.tight_layout()
+# plt.show()
