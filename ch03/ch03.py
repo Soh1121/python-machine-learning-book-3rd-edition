@@ -199,3 +199,22 @@ y_combined = np.hstack((y_train, y_test))
 # # グラフを表示
 # plt.tight_layout()
 # plt.show()
+
+# ロジスティック回帰の実装の確認
+# 学習データをIris-SetosaとIris-Versicolorのみに絞りり、特徴量を変数X_train_01_subnetへ、目的変数を変数y_train_01_subnetへ代入
+X_train_01_subnet = X_train[(y_train == 0) | (y_train == 1)]
+y_train_01_subnet = y_train[(y_train == 0) | (y_train == 1)]
+# ロジスティック回帰のインスタンスを生成し、変数lrgdへ代入
+lrgd = LogisticRegressionGD(eta=0.05, n_iter=1000, random_state=1)
+# モデルを訓練データに適合させる
+lrgd.fit(X_train_01_subnet, y_train_01_subnet)
+# 決定領域をプロット
+plot_decision_region(X=X_train_01_subnet, y=y_train_01_subnet, classifier=lrgd)
+# ラベルを設定
+plt.xlabel("petal length [standardized]")
+plt.ylabel("petal width [standardized]")
+# 凡例の表示
+plt.legend(loc="upper left")
+# プロットを表示
+plt.tight_layout()
+plt.show()
