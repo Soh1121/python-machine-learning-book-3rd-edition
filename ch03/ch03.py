@@ -2,7 +2,7 @@ from sklearn import datasets
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import Perceptron
+from sklearn.linear_model import Perceptron, LogisticRegression
 from sklearn.metrics import accuracy_score
 from matplotlib.colors import ListedColormap
 import matplotlib.pyplot as plt
@@ -200,21 +200,47 @@ y_combined = np.hstack((y_train, y_test))
 # plt.tight_layout()
 # plt.show()
 
-# ロジスティック回帰の実装の確認
-# 学習データをIris-SetosaとIris-Versicolorのみに絞りり、特徴量を変数X_train_01_subnetへ、目的変数を変数y_train_01_subnetへ代入
-X_train_01_subnet = X_train[(y_train == 0) | (y_train == 1)]
-y_train_01_subnet = y_train[(y_train == 0) | (y_train == 1)]
-# ロジスティック回帰のインスタンスを生成し、変数lrgdへ代入
-lrgd = LogisticRegressionGD(eta=0.05, n_iter=1000, random_state=1)
-# モデルを訓練データに適合させる
-lrgd.fit(X_train_01_subnet, y_train_01_subnet)
-# 決定領域をプロット
-plot_decision_region(X=X_train_01_subnet, y=y_train_01_subnet, classifier=lrgd)
-# ラベルを設定
-plt.xlabel("petal length [standardized]")
-plt.ylabel("petal width [standardized]")
-# 凡例の表示
-plt.legend(loc="upper left")
-# プロットを表示
-plt.tight_layout()
-plt.show()
+# # ロジスティック回帰の実装の確認
+# # 学習データをIris-SetosaとIris-Versicolorのみに絞りり、特徴量を変数X_train_01_subnetへ、目的変数を変数y_train_01_subnetへ代入
+# X_train_01_subnet = X_train[(y_train == 0) | (y_train == 1)]
+# y_train_01_subnet = y_train[(y_train == 0) | (y_train == 1)]
+# # ロジスティック回帰のインスタンスを生成し、変数lrgdへ代入
+# lrgd = LogisticRegressionGD(eta=0.05, n_iter=1000, random_state=1)
+# # モデルを訓練データに適合させる
+# lrgd.fit(X_train_01_subnet, y_train_01_subnet)
+# # 決定領域をプロット
+# plot_decision_region(X=X_train_01_subnet, y=y_train_01_subnet, classifier=lrgd)
+# # ラベルを設定
+# plt.xlabel("petal length [standardized]")
+# plt.ylabel("petal width [standardized]")
+# # 凡例の表示
+# plt.legend(loc="upper left")
+# # プロットを表示
+# plt.tight_layout()
+# plt.show()
+
+# scikit-learnを使ってより最適なロジスティック回帰を実装
+#  ロジスティック回帰のインスタンスを生成し、変数lrに代入する
+lr = LogisticRegression(C=100.0, random_state=1, solver="lbfgs", multi_class="ovr")
+# 訓練データをモデルに適合させる
+lr.fit(X_train_std, y_train)
+# # 決定境界をプロット
+# plot_decision_region(X_combined_std, y_combined, classifier=lr, test_idx=range(105, 150))
+# # 軸のラベルを設定
+# plt.xlabel("petal length [standardized]")
+# plt.ylabel("petal width [standardized]")
+# # 凡例を設定
+# plt.legend(loc="upper left")
+# # グラフを表示
+# plt.tight_layout()
+# plt.show()
+
+# クラス予測を実施
+# クラスの所属確率を算出
+print(lr.predict_proba(X_test_std[:3, :]))
+# クラスのラベルの予測値を算出
+print(lr.predict_proba(X_test_std[:3, :]).argmax(axis=1))
+# 最尤のクラスラベルを表示
+print(lr.predict(X_test_std[:3, :]))
+# 1行のデータの場合は2次元配列に変換して表示
+print(lr.predict(X_test_std[0, :].reshape(1, -1)))
