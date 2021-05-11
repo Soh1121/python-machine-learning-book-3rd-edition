@@ -4,6 +4,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import Perceptron, LogisticRegression
 from sklearn.metrics import accuracy_score
+# scikitlearnのsvmモジュールからSVCクラスをインポート
+from sklearn.svm import SVC
 from matplotlib.colors import ListedColormap
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -245,27 +247,44 @@ lr.fit(X_train_std, y_train)
 # # 1行のデータの場合は2次元配列に変換して表示
 # print(lr.predict(X_test_std[0, :].reshape(1, -1)))
 
-# 正則化の強さを可視化する
-# 空のリストを生成（重み係数、逆正則化パラメータ）
-weights, params = [], []
-# 10個の逆正則化パラメータに対応するロジスティック回帰モデルをそれぞれ処理
-for c in np.arange(-5, 5):
-    # ロジスティック回帰モデルを生成
-    lr = LogisticRegression(C=10.**c, random_state=1, solver='lbfgs', multi_class='ovr')
-    # 学習を実行
-    lr.fit(X_train_std, y_train)
-    # 重み係数を格納
-    weights.append(lr.coef_[1])
-    # 逆正則化パラメータを格納
-    params.append(10.**c)
-# 重み係数をNumpy配列に変換
-weights = np.array(weights)
-# 横軸に逆正則化パラメータ、縦軸に重み係数をプロット
-plt.plot(params, weights[:, 0], label='petal length')
-plt.plot(params, weights[:, 1], linestyle='--', label='petal width')
-plt.ylabel('weight coefficient')
-plt.xlabel('C')
+# # 正則化の強さを可視化する
+# # 空のリストを生成（重み係数、逆正則化パラメータ）
+# weights, params = [], []
+# # 10個の逆正則化パラメータに対応するロジスティック回帰モデルをそれぞれ処理
+# for c in np.arange(-5, 5):
+#     # ロジスティック回帰モデルを生成
+#     lr = LogisticRegression(C=10.**c, random_state=1, solver='lbfgs', multi_class='ovr')
+#     # 学習を実行
+#     lr.fit(X_train_std, y_train)
+#     # 重み係数を格納
+#     weights.append(lr.coef_[1])
+#     # 逆正則化パラメータを格納
+#     params.append(10.**c)
+# # 重み係数をNumpy配列に変換
+# weights = np.array(weights)
+# # 横軸に逆正則化パラメータ、縦軸に重み係数をプロット
+# plt.plot(params, weights[:, 0], label='petal length')
+# plt.plot(params, weights[:, 1], linestyle='--', label='petal width')
+# plt.ylabel('weight coefficient')
+# plt.xlabel('C')
+# plt.legend(loc='upper left')
+# # 横軸を対数スケールに設定
+# plt.xscale('log')
+# plt.show()
+
+# SVMを利用したIrisデータセットの品種分類
+# 線形SVMのインスタンスを生成
+svm = SVC(kernel='linear', C=1.0, random_state=1)
+# 線形SVMのモデルに訓練データを適合させる
+svm.fit(X_train_std, y_train)
+# 境界領域とデータをプロット
+plot_decision_region(X_combined_std, y_combined, classifier=svm, test_idx=range(105, 150))
+# X軸のラベルをセット
+plt.xlabel('petal length [standardized]')
+# Y軸のラベルをセット
+plt.ylabel('petal width [standardized]')
+# 凡例を左上にセット
 plt.legend(loc='upper left')
-# 横軸を対数スケールに設定
-plt.xscale('log')
+# プロットを表示
+plt.tight_layout()
 plt.show()
