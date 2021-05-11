@@ -6,6 +6,8 @@ from sklearn.linear_model import Perceptron, LogisticRegression
 from sklearn.metrics import accuracy_score
 # scikitlearnのsvmモジュールからSVCクラスをインポート
 from sklearn.svm import SVC
+# メモリ容量を考慮してモデルのインスタンス生成を行うクラスのインポート
+from sklearn.linear_model import SGDClassifier
 from matplotlib.colors import ListedColormap
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -272,19 +274,27 @@ lr.fit(X_train_std, y_train)
 # plt.xscale('log')
 # plt.show()
 
-# SVMを利用したIrisデータセットの品種分類
-# 線形SVMのインスタンスを生成
-svm = SVC(kernel='linear', C=1.0, random_state=1)
-# 線形SVMのモデルに訓練データを適合させる
-svm.fit(X_train_std, y_train)
-# 境界領域とデータをプロット
-plot_decision_region(X_combined_std, y_combined, classifier=svm, test_idx=range(105, 150))
-# X軸のラベルをセット
-plt.xlabel('petal length [standardized]')
-# Y軸のラベルをセット
-plt.ylabel('petal width [standardized]')
-# 凡例を左上にセット
-plt.legend(loc='upper left')
-# プロットを表示
-plt.tight_layout()
-plt.show()
+# # SVMを利用したIrisデータセットの品種分類
+# # 線形SVMのインスタンスを生成
+# svm = SVC(kernel='linear', C=1.0, random_state=1)
+# # 線形SVMのモデルに訓練データを適合させる
+# svm.fit(X_train_std, y_train)
+# # 境界領域とデータをプロット
+# plot_decision_region(X_combined_std, y_combined, classifier=svm, test_idx=range(105, 150))
+# # X軸のラベルをセット
+# plt.xlabel('petal length [standardized]')
+# # Y軸のラベルをセット
+# plt.ylabel('petal width [standardized]')
+# # 凡例を左上にセット
+# plt.legend(loc='upper left')
+# # プロットを表示
+# plt.tight_layout()
+# plt.show()
+
+# メモリ容量を考慮した機械学習モデルのインスタンス生成
+# 確率的勾配降下法バージョンのパーセプトロンを生成
+ppn = SGDClassifier(loss='perceptron')
+# 確率的勾配降下法バージョンのロジスティック回帰を生成
+lr = SGDClassifier(loss='log')
+# 確率的勾配降下法バージョンのSVM（損失関数=ヒンジ関数）を生成
+svm = SGDClassifier(loss='hinge')
