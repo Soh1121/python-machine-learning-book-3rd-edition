@@ -321,13 +321,29 @@ y_xor = np.where(y_xor, 1, -1)
 # plt.tight_layout()
 # plt.show()
 
-# カーネルSVMの訓練を行い、XORデータを分割する非線形の決定境界を描けるか確認
-# RBFカーネルによるSVMのインスタンスを生成
-svm = SVC(kernel='rbf', random_state=1, gamma=0.10, C=10.0)
+# # カーネルSVMの訓練を行い、XORデータを分割する非線形の決定境界を描けるか確認
+# # RBFカーネルによるSVMのインスタンスを生成
+# svm = SVC(kernel='rbf', random_state=1, gamma=0.10, C=10.0)
+# # 訓練データを適合
+# svm.fit(X_xor, y_xor)
+# # 決定境界をプロット
+# plot_decision_region(X_xor, y_xor, classifier=svm)
+# # 凡例を左上に表示
+# plt.legend(loc='upper left')
+# # プロットを表示
+# plt.tight_layout()
+# plt.show()
+
+# RBFカーネルSVMをIrisデータセットに適用
+# RBFカーネルによるSVMのインスタンスを生成（2つのパラメータを変更）
+svm = SVC(kernel='rbf', random_state=1, gamma=0.2, C=1.0)
 # 訓練データを適合
-svm.fit(X_xor, y_xor)
+svm.fit(X_train_std, y_train)
 # 決定境界をプロット
-plot_decision_region(X_xor, y_xor, classifier=svm)
+plot_decision_region(X_combined_std, y_combined, classifier=svm, test_idx=range(105, 150))
+# 軸のラベルを設定
+plt.xlabel('petal length [standardized]')
+plt.ylabel('petal width [standardized]')
 # 凡例を左上に表示
 plt.legend(loc='upper left')
 # プロットを表示
