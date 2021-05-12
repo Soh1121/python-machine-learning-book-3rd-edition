@@ -299,7 +299,7 @@ lr.fit(X_train_std, y_train)
 # # 確率的勾配降下法バージョンのSVM（損失関数=ヒンジ関数）を生成
 # svm = SGDClassifier(loss='hinge')
 
-# 線形分離不可能なデータの生成と確認
+# # 線形分離不可能なデータの生成と確認
 # 乱数シードを指定
 np.random.seed(1)
 # 標準正規分布に従う乱数で200行2列の行列を生成
@@ -308,15 +308,28 @@ X_xor = np.random.randn(200, 2)
 y_xor = np.logical_xor(X_xor[:, 0] > 0, X_xor[:, 1] > 0)
 # 排他的論理和の値が真の場合は1、偽の場合は-1を割り当てる
 y_xor = np.where(y_xor, 1, -1)
-# ラベル1を青のxでプロット
-plt.scatter(X_xor[y_xor==1, 0], X_xor[y_xor==1, 1], c='b', marker='x', label='1')
-# ラベル-1を赤の四角でプロット
-plt.scatter(X_xor[y_xor==-1, 0], X_xor[y_xor==-1, 1], c='r', marker='s', label='-1')
-# 軸の範囲を設定
-plt.xlim([-3, 3])
-plt.ylim([-3, 3])
-# 凡例を右上に
-plt.legend(loc='upper right')
+# # ラベル1を青のxでプロット
+# plt.scatter(X_xor[y_xor==1, 0], X_xor[y_xor==1, 1], c='b', marker='x', label='1')
+# # ラベル-1を赤の四角でプロット
+# plt.scatter(X_xor[y_xor==-1, 0], X_xor[y_xor==-1, 1], c='r', marker='s', label='-1')
+# # 軸の範囲を設定
+# plt.xlim([-3, 3])
+# plt.ylim([-3, 3])
+# # 凡例を右上に
+# plt.legend(loc='upper right')
+# # プロットを表示
+# plt.tight_layout()
+# plt.show()
+
+# カーネルSVMの訓練を行い、XORデータを分割する非線形の決定境界を描けるか確認
+# RBFカーネルによるSVMのインスタンスを生成
+svm = SVC(kernel='rbf', random_state=1, gamma=0.10, C=10.0)
+# 訓練データを適合
+svm.fit(X_xor, y_xor)
+# 決定境界をプロット
+plot_decision_region(X_xor, y_xor, classifier=svm)
+# 凡例を左上に表示
+plt.legend(loc='upper left')
 # プロットを表示
 plt.tight_layout()
 plt.show()
