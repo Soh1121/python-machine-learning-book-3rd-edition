@@ -8,6 +8,8 @@ from sklearn.metrics import accuracy_score
 from sklearn.svm import SVC
 # メモリ容量を考慮してモデルのインスタンス生成を行うクラスのインポート
 from sklearn.linear_model import SGDClassifier
+# 決定木を実装するためにscikit-learnのtreeモジュールからDecisionTreeClassifierをインポート
+from sklearn.tree import DecisionTreeClassifier
 from matplotlib.colors import ListedColormap
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -367,52 +369,70 @@ y_xor = np.where(y_xor, 1, -1)
 # plt.show()
 
 
-# 3種類の不純度条件を視覚的に比較するために不純度の指標をプロット
-# ジニ不純度の関数を定義
-def gini(p):
-    return (p) * (1 - (p)) + (1 - p) * (1 - (1 - p))
+# # 3種類の不純度条件を視覚的に比較するために不純度の指標をプロット
+# # ジニ不純度の関数を定義
+# def gini(p):
+#     return (p) * (1 - (p)) + (1 - p) * (1 - (1 - p))
 
 
-# エントロピーの関数を定義
-def entropy(p):
-    return -p * np.log2(p) - (1 - p) * np.log2(1 - p)
+# # エントロピーの関数を定義
+# def entropy(p):
+#     return -p * np.log2(p) - (1 - p) * np.log2(1 - p)
 
 
-# 分類誤差の関数を定義
-def error(p):
-    return 1 - np.max([p, 1 - p])
+# # 分類誤差の関数を定義
+# def error(p):
+#     return 1 - np.max([p, 1 - p])
 
 
-# 確率を表す配列を生成（0から0.99まで0.01刻み）
-x = np.arange(0.0, 1.0, 0.01)
+# # 確率を表す配列を生成（0から0.99まで0.01刻み）
+# x = np.arange(0.0, 1.0, 0.01)
 
-# 配列の値を元にエントロピー、分類誤差を計算
-# 3項演算子を利用してp = 0のときに対応
-ent = [entropy(p) if p != 0 else None for p in x]
-# スケーリングバージョンのエントロピー
-sc_ent = [e*0.5 if e else None for e in ent]
-# 分類誤差
-err = [error(i) for i in x]
-# 図の作成を開始
-fig = plt.figure()
-ax = plt.subplot(111)
-# エントロピー（2種）、ジニ不純度、分類誤差のそれぞれをループ処理
-for i, lab, ls, c in zip(
-    [ent, sc_ent, gini(x), err],
-    ['Entropy', 'Entropy (scaled)', 'Gini impurity', 'Misclassification error'],
-    ['-', '-', '--', '-.'],
-    ['black', 'lightgray', 'red', 'green', 'cyan']
-    ):
-    line = ax.plot(x, i, label=lab, linestyle=ls, lw=2, color=c)
-# 凡例の設置（中央の上）
-ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=5, fancybox=True, shadow=False)
-# 2本の水平線の破線を引く
-ax.axhline(y=0.5, linewidth=1, color='k', linestyle='--')
-ax.axhline(y=1.0, linewidth=1, color='k', linestyle='--')
-# 横軸の上限/下限を設定
-plt.ylim([0, 1.1])
-# ラベルを設定
-plt.xlabel('p(i=1)')
-plt.ylabel('impurity index')
+# # 配列の値を元にエントロピー、分類誤差を計算
+# # 3項演算子を利用してp = 0のときに対応
+# ent = [entropy(p) if p != 0 else None for p in x]
+# # スケーリングバージョンのエントロピー
+# sc_ent = [e*0.5 if e else None for e in ent]
+# # 分類誤差
+# err = [error(i) for i in x]
+# # 図の作成を開始
+# fig = plt.figure()
+# ax = plt.subplot(111)
+# # エントロピー（2種）、ジニ不純度、分類誤差のそれぞれをループ処理
+# for i, lab, ls, c in zip(
+#     [ent, sc_ent, gini(x), err],
+#     ['Entropy', 'Entropy (scaled)', 'Gini impurity', 'Misclassification error'],
+#     ['-', '-', '--', '-.'],
+#     ['black', 'lightgray', 'red', 'green', 'cyan']
+#     ):
+#     line = ax.plot(x, i, label=lab, linestyle=ls, lw=2, color=c)
+# # 凡例の設置（中央の上）
+# ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=5, fancybox=True, shadow=False)
+# # 2本の水平線の破線を引く
+# ax.axhline(y=0.5, linewidth=1, color='k', linestyle='--')
+# ax.axhline(y=1.0, linewidth=1, color='k', linestyle='--')
+# # 横軸の上限/下限を設定
+# plt.ylim([0, 1.1])
+# # ラベルを設定
+# plt.xlabel('p(i=1)')
+# plt.ylabel('impurity index')
+# # グラフの表示
+# plt.show()
+
+# ジニ不純度を指標とする決定木のインスタンスを生成
+tree_model = DecisionTreeClassifier(criterion='gini', max_depth=4, random_state=1)
+# 決定木のモデルを訓練データに適合させる
+tree_model.fit(X_train, y_train)
+# 訓練データとテストデータを図示するために結合（標準化を行わない）
+X_combined = np.vstack((X_train, X_test))
+y_combined = np.hstack((y_train, y_test))
+# 決定境界をプロット
+plot_decision_region(X_combined, y_combined, classifier=tree_model, test_idx=range(105, 150))
+# 軸のラベルを設定
+plt.xlabel('petal length [cm]')
+plt.ylabel('petal width [cm]')
+# 凡例を左上に表示
+plt.legend(loc='upper left')
 # グラフの表示
+plt.tight_layout()
 plt.show()
