@@ -10,11 +10,15 @@ from sklearn.svm import SVC
 from sklearn.linear_model import SGDClassifier
 # 決定木を実装するためにscikit-learnのtreeモジュールからDecisionTreeClassifierをインポート
 from sklearn.tree import DecisionTreeClassifier
-# scikit-learnからtreeモジュールをインポート
+# 決定木を可視化するためscikit-learnからtreeモジュールをインポート
 from sklearn import tree
+# 決定木の改善画像をローカルにpngで保存するため、scikit-learnのtreeモジュールからexport_graphvizモジュールをインポート
+from sklearn.tree import export_graphviz
 from matplotlib.colors import ListedColormap
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+# 決定木の改善画像をローカルにpngで保存するため、pydotplusからgraph_from_dot_dataモジュールをインポート
+from pydotplus import graph_from_dot_data
 mpl.style.use("ggplot")
 
 
@@ -439,8 +443,18 @@ tree_model.fit(X_train, y_train)
 # plt.tight_layout()
 # plt.show()
 
-# scikit-learnを用いくて決定木モデルを可視化
-# treeモジュールのplot_tree()関数を利用
-tree.plot_tree(tree_model)
-# 決定木を可視化
-plt.show()
+# # scikit-learnを用いくて決定木モデルを可視化
+# # treeモジュールのplot_tree()関数を利用
+# tree.plot_tree(tree_model)
+# # 決定木を可視化
+# plt.show()
+
+# 決定木の画像をPNGフォーマットでローカルディレクトリに作成する
+class_names = ['Setosa', 'Versicolor', 'Virginica']
+feature_names = ['petal length', 'ptetal width']
+# オプションの解
+# filled：ノードに色を追加する
+# rounded：ボックスの角を丸める
+dot_data = export_graphviz(tree_model, filled=True, rounded=True, class_names=class_names, feature_names=feature_names, out_file=None)
+graph = graph_from_dot_data(dot_data)
+graph.write_png('tree.png')
