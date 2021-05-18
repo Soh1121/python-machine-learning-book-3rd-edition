@@ -10,6 +10,8 @@ from sklearn.svm import SVC
 from sklearn.linear_model import SGDClassifier
 # 決定木を実装するためにscikit-learnのtreeモジュールからDecisionTreeClassifierをインポート
 from sklearn.tree import DecisionTreeClassifier
+# scikit-learnからtreeモジュールをインポート
+from sklearn import tree
 from matplotlib.colors import ListedColormap
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -423,16 +425,22 @@ y_xor = np.where(y_xor, 1, -1)
 tree_model = DecisionTreeClassifier(criterion='gini', max_depth=4, random_state=1)
 # 決定木のモデルを訓練データに適合させる
 tree_model.fit(X_train, y_train)
-# 訓練データとテストデータを図示するために結合（標準化を行わない）
-X_combined = np.vstack((X_train, X_test))
-y_combined = np.hstack((y_train, y_test))
-# 決定境界をプロット
-plot_decision_region(X_combined, y_combined, classifier=tree_model, test_idx=range(105, 150))
-# 軸のラベルを設定
-plt.xlabel('petal length [cm]')
-plt.ylabel('petal width [cm]')
-# 凡例を左上に表示
-plt.legend(loc='upper left')
-# グラフの表示
-plt.tight_layout()
+# # 訓練データとテストデータを図示するために結合（標準化を行わない）
+# X_combined = np.vstack((X_train, X_test))
+# y_combined = np.hstack((y_train, y_test))
+# # 決定境界をプロット
+# plot_decision_region(X_combined, y_combined, classifier=tree_model, test_idx=range(105, 150))
+# # 軸のラベルを設定
+# plt.xlabel('petal length [cm]')
+# plt.ylabel('petal width [cm]')
+# # 凡例を左上に表示
+# plt.legend(loc='upper left')
+# # グラフの表示
+# plt.tight_layout()
+# plt.show()
+
+# scikit-learnを用いくて決定木モデルを可視化
+# treeモジュールのplot_tree()関数を利用
+tree.plot_tree(tree_model)
+# 決定木を可視化
 plt.show()
