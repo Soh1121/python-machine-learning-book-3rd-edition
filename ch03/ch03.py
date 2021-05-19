@@ -14,6 +14,8 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn import tree
 # 決定木の改善画像をローカルにpngで保存するため、scikit-learnのtreeモジュールからexport_graphvizモジュールをインポート
 from sklearn.tree import export_graphviz
+# scikit-learnのensembleモジュールからRandomForestClassifierをインポート
+from sklearn.ensemble import RandomForestClassifier
 from matplotlib.colors import ListedColormap
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -425,13 +427,13 @@ y_xor = np.where(y_xor, 1, -1)
 # # グラフの表示
 # plt.show()
 
-# ジニ不純度を指標とする決定木のインスタンスを生成
-tree_model = DecisionTreeClassifier(criterion='gini', max_depth=4, random_state=1)
-# 決定木のモデルを訓練データに適合させる
-tree_model.fit(X_train, y_train)
+# # ジニ不純度を指標とする決定木のインスタンスを生成
+# tree_model = DecisionTreeClassifier(criterion='gini', max_depth=4, random_state=1)
+# # 決定木のモデルを訓練データに適合させる
+# tree_model.fit(X_train, y_train)
 # # 訓練データとテストデータを図示するために結合（標準化を行わない）
-# X_combined = np.vstack((X_train, X_test))
-# y_combined = np.hstack((y_train, y_test))
+X_combined = np.vstack((X_train, X_test))
+y_combined = np.hstack((y_train, y_test))
 # # 決定境界をプロット
 # plot_decision_region(X_combined, y_combined, classifier=tree_model, test_idx=range(105, 150))
 # # 軸のラベルを設定
@@ -449,12 +451,29 @@ tree_model.fit(X_train, y_train)
 # # 決定木を可視化
 # plt.show()
 
-# 決定木の画像をPNGフォーマットでローカルディレクトリに作成する
-class_names = ['Setosa', 'Versicolor', 'Virginica']
-feature_names = ['petal length', 'ptetal width']
-# オプションの解
-# filled：ノードに色を追加する
-# rounded：ボックスの角を丸める
-dot_data = export_graphviz(tree_model, filled=True, rounded=True, class_names=class_names, feature_names=feature_names, out_file=None)
-graph = graph_from_dot_data(dot_data)
-graph.write_png('tree.png')
+# # 決定木の画像をPNGフォーマットでローカルディレクトリに作成する
+# class_names = ['Setosa', 'Versicolor', 'Virginica']
+# feature_names = ['petal length', 'ptetal width']
+# # オプションの解
+# # filled：ノードに色を追加する
+# # rounded：ボックスの角を丸める
+# dot_data = export_graphviz(tree_model, filled=True, rounded=True, class_names=class_names, feature_names=feature_names, out_file=None)
+# graph = graph_from_dot_data(dot_data)
+# graph.write_png('tree.png')
+
+# ランダムフォレストの実装
+# ジニ不純度を指標とするランダムフォレストのインスタンスを生成
+forest = RandomForestClassifier(criterion='gini', n_estimators=25, random_state=1, n_jobs=2)
+# 訓練データにランダムフォレストのモデルを適合させる
+forest.fit(X_train, y_train)
+# 決定境界をプロット
+plot_decision_region(X_combined, y_combined, classifier=forest, test_idx=range(105, 150))
+# X軸・Y軸のラベルを設定
+plt.xlabel('petal length [cm]')
+plt.ylabel('petal width [cm]')
+# 凡例を左上にプロット
+plt.legend(loc='upper left')
+# プロットを表示
+plt.tight_layout()
+plt.show()
+
