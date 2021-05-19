@@ -16,6 +16,8 @@ from sklearn import tree
 from sklearn.tree import export_graphviz
 # scikit-learnのensembleモジュールからRandomForestClassifierをインポート
 from sklearn.ensemble import RandomForestClassifier
+# K最近傍法を実装するためscikit-learnのneighborsモジュールからKNeighborsClassifierをインポート
+from sklearn.neighbors import KNeighborsClassifier
 from matplotlib.colors import ListedColormap
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -461,19 +463,37 @@ y_combined = np.hstack((y_train, y_test))
 # graph = graph_from_dot_data(dot_data)
 # graph.write_png('tree.png')
 
-# ランダムフォレストの実装
-# ジニ不純度を指標とするランダムフォレストのインスタンスを生成
-forest = RandomForestClassifier(criterion='gini', n_estimators=25, random_state=1, n_jobs=2)
-# 訓練データにランダムフォレストのモデルを適合させる
-forest.fit(X_train, y_train)
+# # ランダムフォレストの実装
+# # ジニ不純度を指標とするランダムフォレストのインスタンスを生成
+# forest = RandomForestClassifier(criterion='gini', n_estimators=25, random_state=1, n_jobs=2)
+# # 訓練データにランダムフォレストのモデルを適合させる
+# forest.fit(X_train, y_train)
+# # 決定境界をプロット
+# plot_decision_region(X_combined, y_combined, classifier=forest, test_idx=range(105, 150))
+# # X軸・Y軸のラベルを設定
+# plt.xlabel('petal length [cm]')
+# plt.ylabel('petal width [cm]')
+# # 凡例を左上にプロット
+# plt.legend(loc='upper left')
+# # プロットを表示
+# plt.tight_layout()
+# plt.show()
+
+# ユークリッド距離の指標を使ってscikit-learnでKNNモデルを実装
+# k最近傍法のインスタスを生成
+# n_neighbors：近傍オブジェクト数
+# p：ミンコフスキー距離の指数パラメータで2はユークリッド距離
+# metric：距離メトリクス
+knn = KNeighborsClassifier(n_neighbors=5, p=2, metric='minkowski')
+# 訓練データにk最近傍法のモデルを適合させる
+knn.fit(X_train_std, y_train)
 # 決定境界をプロット
-plot_decision_region(X_combined, y_combined, classifier=forest, test_idx=range(105, 150))
+plot_decision_region(X_combined_std, y_combined, classifier=knn, test_idx=range(105, 150))
 # X軸・Y軸のラベルを設定
-plt.xlabel('petal length [cm]')
-plt.ylabel('petal width [cm]')
-# 凡例を左上にプロット
+plt.xlabel('petal length [standardized]')
+plt.ylabel('petal width [standardized]')
+# 凡例を左上に表示
 plt.legend(loc='upper left')
 # プロットを表示
 plt.tight_layout()
 plt.show()
-
