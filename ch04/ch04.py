@@ -15,4 +15,7 @@ df = pd.read_csv(StringIO(csv_data))
 # print(df)
 
 # 各特徴量の欠測値をカウント
-print(df.isnull().sum())
+# print(df.isnull().sum())
+
+# 欠測値を含む行を削除
+print(df.dropna())
