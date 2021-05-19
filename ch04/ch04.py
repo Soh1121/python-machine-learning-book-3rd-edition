@@ -18,4 +18,7 @@ df = pd.read_csv(StringIO(csv_data))
 # print(df.isnull().sum())
 
 # 欠測値を含む行を削除
-print(df.dropna())
+# print(df.dropna())
+
+# 欠測値を含む列を削除
+print(df.dropna(axis=1))
