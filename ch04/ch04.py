@@ -21,4 +21,11 @@ df = pd.read_csv(StringIO(csv_data))
 # print(df.dropna())
 
 # 欠測値を含む列を削除
-print(df.dropna(axis=1))
+# print(df.dropna(axis=1))
+
+# すべての列がNaNである行だけを削除
+# print(df.dropna(how='all'))
+# 非NaNの値が4つ未満の行を削除
+print(df.dropna(thresh=4))
+# 特定の列にNaNが含まれている行だけ削除
+print(df.dropna(subset=['C']))
