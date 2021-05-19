@@ -34,11 +34,15 @@ df = pd.read_csv(StringIO(csv_data))
 # 特定の列にNaNが含まれている行だけ削除
 # print(df.dropna(subset=['C']))
 
-# 欠測値をscikit-learnを用いて補完する
-# 欠測値補完のインスタンスを生成（平均値補完）
-imr = SimpleImputer(missing_values=np.nan, strategy='mean')
-# データを適合
-imr.fit(df.values)
-# 補完を実行
-imputed_data = imr.transform(df.values)
-print(imputed_data)
+# # 欠測値をscikit-learnを用いて補完する
+# # 欠測値補完のインスタンスを生成（平均値補完）
+# imr = SimpleImputer(missing_values=np.nan, strategy='mean')
+# # データを適合
+# imr.fit(df.values)
+# # 補完を実行
+# imputed_data = imr.transform(df.values)
+# print(imputed_data)
+
+# pandasを使った平均値補完
+print(df.fillna(df.mean()))
+
