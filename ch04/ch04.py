@@ -8,15 +8,15 @@ from sklearn.impute import SimpleImputer
 import numpy as np
 
 
-# 表形式のデータで欠損値を見てみる
-# サンプルデータを作成
-csv_data = '''A,B,C,D
-              1.0,2.0,3.0,4.0
-              5.0,6.0,,8.0
-              10.0,11.0,12.0,'''
-# サンプルデータを読み込む
-df = pd.read_csv(StringIO(csv_data))
-# print(df)
+# # 表形式のデータで欠損値を見てみる
+# # サンプルデータを作成
+# csv_data = '''A,B,C,D
+#               1.0,2.0,3.0,4.0
+#               5.0,6.0,,8.0
+#               10.0,11.0,12.0,'''
+# # サンプルデータを読み込む
+# df = pd.read_csv(StringIO(csv_data))
+# # print(df)
 
 # 各特徴量の欠測値をカウント
 # print(df.isnull().sum())
@@ -44,5 +44,15 @@ df = pd.read_csv(StringIO(csv_data))
 # print(imputed_data)
 
 # pandasを使った平均値補完
-print(df.fillna(df.mean()))
+# print(df.fillna(df.mean()))
 
+# カテゴリデータのエンコーディング
+# サンプルデータを生成
+df = pd.DataFrame([
+    ['green', 'M', 10.1, 'class2'],
+    ['red', 'L', 13.5, 'class1'],
+    ['blue', 'XL', 15.3, 'class2']
+])
+# 列名を設定
+df.columns = ['color', 'size', 'price', 'classlabel']
+print(df)
