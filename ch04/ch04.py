@@ -4,6 +4,8 @@ import pandas as pd
 from io import StringIO
 # 欠測値を補完するためにscikit-learnのimputeモジュールからSimpleImputerクラスをインポートする
 from sklearn.impute import SimpleImputer
+# クラスラベルを整数値に変換するためにscikit-learnのpreprocessingモジュールからLabelEncoderクラスをインポートする
+from sklearn.preprocessing import LabelEncoder
 # ndarayを扱うためにnumpyをnpとしてインポートする
 import numpy as np
 
@@ -57,13 +59,31 @@ df = pd.DataFrame([
 df.columns = ['color', 'size', 'price', 'classlabel']
 # print(df)
 
-# 順序特徴量を生成
+# # 順序特徴量を生成
 # Tシャツのサイズと整数を対応させるディクショナリを生成
 size_mapping = {'XL': 3, 'L': 2, 'M': 1}
 # Tシャツのサイズを整数に変換
 df['size'] = df['size'].map(size_mapping)
+# print(df)
+# # 整数値を文字列表現に戻す
+# inv_size_mapping = {v: k for k, v in size_mapping.items()}
+# df['size'] = df['size'].map(inv_size_mapping)
+# print(df)
+
+# クラスラベルをエンコーディング
+class_mapping = {label: idx for idx, label in enumerate(np.unique(df['classlabel']))}
+print(class_mapping)
+# クラスラベルを整数に変換
+df['classlabel'] = df['classlabel'].map(class_mapping)
 print(df)
-# 整数値を文字列表現に戻す
-inv_size_mapping = {v: k for k, v in size_mapping.items()}
-df['size'] = df['size'].map(inv_size_mapping)
+# 整数と暮らすラベルを対応させるディクショナリを生成
+inv_class_mapping = {v: k for k, v in class_mapping.items()}
+# 整数からクラスラベルに変換
+df['classlabel'] = df['classlabel'].map(inv_class_mapping)
 print(df)
+# scikit-learnのLabelEncoderクラスを利用する場合
+class_le = LabelEncoder()
+# クラスラベルから整数に変換
+y = class_le.fit_transform(df['classlabel'].values)
+print(y)
+print(class_le.inverse_transform(y))
