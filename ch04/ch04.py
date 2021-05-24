@@ -8,6 +8,8 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder
 # 名義特徴量にダミー特徴量を割り振るためにscikit-learnのpreprocessingモジュールからOneHotEncoderをインポートする
 from sklearn.preprocessing import OneHotEncoder
+# 複数の特徴量からなる配列の列を選択的に変換したいときのために、scikit-learnのcomposeモジュールからColumnTransformerをインポートする
+from sklearn.compose import ColumnTransformer
 # ndarayを扱うためにnumpyをnpとしてインポートする
 import numpy as np
 
@@ -98,12 +100,20 @@ df['classlabel'] = df['classlabel'].map(class_mapping)
 # X[:, 0] = color_le.fit_transform(X[:, 0])
 # print(X)
 
-# one-hotエンコーディングの実装
+# # one-hotエンコーディングの実装
+# # Tシャツの色、サイズ、価格を抽出
+# X = df[['color', 'size', 'price']].values
+# # one-hotエンコーダの生成
+# color_ohe = OneHotEncoder()
+# # one-hotエンコーディングを実施
+# print(X[:, 0])
+# print(X[:, 0].reshape(-1, 1))
+# print(color_ohe.fit_transform(X[:, 0].reshape(-1, 1)).toarray())
+
+# 複数の特徴量からなる配列の列を選択的に変換
 # Tシャツの色、サイズ、価格を抽出
 X = df[['color', 'size', 'price']].values
-# one-hotエンコーダの生成
-color_ohe = OneHotEncoder()
-# one-hotエンコーディングを実施
-print(X[:, 0])
-print(X[:, 0].reshape(-1, 1))
-print(color_ohe.fit_transform(X[:, 0].reshape(-1, 1)).toarray())
+# columnTransformerの生成
+c_transf = ColumnTransformer([('onehot', OneHotEncoder(), [0]), ('nothing', 'passthrough', [1, 2])])
+# 複数の特徴量からなる配列の列を選択的にonehotで変換
+print(c_transf.fit_transform(X).astype(float))
