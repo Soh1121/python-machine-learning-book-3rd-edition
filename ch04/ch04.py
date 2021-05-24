@@ -110,10 +110,13 @@ df['classlabel'] = df['classlabel'].map(class_mapping)
 # print(X[:, 0].reshape(-1, 1))
 # print(color_ohe.fit_transform(X[:, 0].reshape(-1, 1)).toarray())
 
-# 複数の特徴量からなる配列の列を選択的に変換
-# Tシャツの色、サイズ、価格を抽出
-X = df[['color', 'size', 'price']].values
-# columnTransformerの生成
-c_transf = ColumnTransformer([('onehot', OneHotEncoder(), [0]), ('nothing', 'passthrough', [1, 2])])
-# 複数の特徴量からなる配列の列を選択的にonehotで変換
-print(c_transf.fit_transform(X).astype(float))
+# # 複数の特徴量からなる配列の列を選択的に変換
+# # Tシャツの色、サイズ、価格を抽出
+# X = df[['color', 'size', 'price']].values
+# # columnTransformerの生成
+# c_transf = ColumnTransformer([('onehot', OneHotEncoder(), [0]), ('nothing', 'passthrough', [1, 2])])
+# # 複数の特徴量からなる配列の列を選択的にonehotで変換
+# print(c_transf.fit_transform(X).astype(float))
+
+# one-hotエンコーディングを実行
+print(pd.get_dummies(df[['price', 'color', 'size']]))
