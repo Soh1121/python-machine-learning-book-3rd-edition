@@ -112,7 +112,7 @@ df['classlabel'] = df['classlabel'].map(class_mapping)
 
 # # 複数の特徴量からなる配列の列を選択的に変換
 # # Tシャツの色、サイズ、価格を抽出
-# X = df[['color', 'size', 'price']].values
+X = df[['color', 'size', 'price']].values
 # # columnTransformerの生成
 # c_transf = ColumnTransformer([('onehot', OneHotEncoder(), [0]), ('nothing', 'passthrough', [1, 2])])
 # # 複数の特徴量からなる配列の列を選択的にonehotで変換
@@ -121,5 +121,10 @@ df['classlabel'] = df['classlabel'].map(class_mapping)
 # # one-hotエンコーディングを実行
 # print(pd.get_dummies(df[['price', 'color', 'size']]))
 
-# 1列目を削除したone-hotエンコーディング
-print(pd.get_dummies(df[['price', 'color', 'size']], drop_first=True))
+# # 1列目を削除したone-hotエンコーディング
+# print(pd.get_dummies(df[['price', 'color', 'size']], drop_first=True))
+
+# OneHotEncoderを用いて冗長な列を削除
+color_ohe = OneHotEncoder(categories='auto', drop='first')
+c_transf = ColumnTransformer([('onehot', color_ohe, [0]), ('nothing', 'passthrough', [1, 2])])
+print(c_transf.fit_transform(X).astype(float))
