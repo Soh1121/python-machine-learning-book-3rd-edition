@@ -118,5 +118,8 @@ df['classlabel'] = df['classlabel'].map(class_mapping)
 # # 複数の特徴量からなる配列の列を選択的にonehotで変換
 # print(c_transf.fit_transform(X).astype(float))
 
-# one-hotエンコーディングを実行
-print(pd.get_dummies(df[['price', 'color', 'size']]))
+# # one-hotエンコーディングを実行
+# print(pd.get_dummies(df[['price', 'color', 'size']]))
+
+# 1列目を削除したone-hotエンコーディング
+print(pd.get_dummies(df[['price', 'color', 'size']], drop_first=True))
