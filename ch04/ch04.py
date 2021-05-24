@@ -6,6 +6,8 @@ from io import StringIO
 from sklearn.impute import SimpleImputer
 # クラスラベルを整数値に変換するためにscikit-learnのpreprocessingモジュールからLabelEncoderクラスをインポートする
 from sklearn.preprocessing import LabelEncoder
+# 名義特徴量にダミー特徴量を割り振るためにscikit-learnのpreprocessingモジュールからOneHotEncoderをインポートする
+from sklearn.preprocessing import OneHotEncoder
 # ndarayを扱うためにnumpyをnpとしてインポートする
 import numpy as np
 
@@ -88,10 +90,20 @@ df['classlabel'] = df['classlabel'].map(class_mapping)
 # print(y)
 # print(class_le.inverse_transform(y))
 
-# color列についても文字列を整数値に変換
+# # color列についても文字列を整数値に変換
+# # Tシャツの色、サイズ、価格を抽出
+# X = df[['color', 'size', 'price']].values
+# # LabelEncoderを用いてクラスラベルから整数に変換
+# color_le = LabelEncoder()
+# X[:, 0] = color_le.fit_transform(X[:, 0])
+# print(X)
+
+# one-hotエンコーディングの実装
 # Tシャツの色、サイズ、価格を抽出
 X = df[['color', 'size', 'price']].values
-# LabelEncoderを用いてクラスラベルから整数に変換
-color_le = LabelEncoder()
-X[:, 0] = color_le.fit_transform(X[:, 0])
-print(X)
+# one-hotエンコーダの生成
+color_ohe = OneHotEncoder()
+# one-hotエンコーディングを実施
+print(X[:, 0])
+print(X[:, 0].reshape(-1, 1))
+print(color_ohe.fit_transform(X[:, 0].reshape(-1, 1)).toarray())
