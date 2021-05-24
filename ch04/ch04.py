@@ -72,18 +72,26 @@ df['size'] = df['size'].map(size_mapping)
 
 # クラスラベルをエンコーディング
 class_mapping = {label: idx for idx, label in enumerate(np.unique(df['classlabel']))}
-print(class_mapping)
+# print(class_mapping)
 # クラスラベルを整数に変換
 df['classlabel'] = df['classlabel'].map(class_mapping)
-print(df)
-# 整数と暮らすラベルを対応させるディクショナリを生成
-inv_class_mapping = {v: k for k, v in class_mapping.items()}
-# 整数からクラスラベルに変換
-df['classlabel'] = df['classlabel'].map(inv_class_mapping)
-print(df)
-# scikit-learnのLabelEncoderクラスを利用する場合
-class_le = LabelEncoder()
-# クラスラベルから整数に変換
-y = class_le.fit_transform(df['classlabel'].values)
-print(y)
-print(class_le.inverse_transform(y))
+# print(df)
+# # 整数とクラスラベルを対応させるディクショナリを生成
+# inv_class_mapping = {v: k for k, v in class_mapping.items()}
+# # 整数からクラスラベルに変換
+# df['classlabel'] = df['classlabel'].map(inv_class_mapping)
+# print(df)
+# # scikit-learnのLabelEncoderクラスを利用する場合
+# class_le = LabelEncoder()
+# # クラスラベルから整数に変換
+# y = class_le.fit_transform(df['classlabel'].values)
+# print(y)
+# print(class_le.inverse_transform(y))
+
+# color列についても文字列を整数値に変換
+# Tシャツの色、サイズ、価格を抽出
+X = df[['color', 'size', 'price']].values
+# LabelEncoderを用いてクラスラベルから整数に変換
+color_le = LabelEncoder()
+X[:, 0] = color_le.fit_transform(X[:, 0])
+print(X)
