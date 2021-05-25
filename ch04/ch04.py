@@ -10,6 +10,8 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 # 複数の特徴量からなる配列の列を選択的に変換したいときのために、scikit-learnのcomposeモジュールからColumnTransformerをインポートする
 from sklearn.compose import ColumnTransformer
+# 訓練データとテストデータに分割するためにscikit-learnのmodel_selectionモジュールからtrain_test_splitをインポート
+from sklearn.model_selection import train_test_split
 # ndarayを扱うためにnumpyをnpとしてインポートする
 import numpy as np
 
@@ -137,7 +139,16 @@ df_wine.columns = ['Class label', 'Alcohol', 'Malic acid', 'Ash',
     'Alcalinity of ash', 'Magnesium', 'Total phenols', 'Flavanoids',
     'Nonflavanoid phenols', 'Proanthocyanins', 'Color intensity', 'Hue',
     'OD280/OD315 of diluted wines', 'Proline']
-# クラスラベルを表示
-print('Class labels', np.unique(df_wine['Class label']))
-# wineデータセットの先頭５行を表示
-print(df_wine.head())
+# # クラスラベルを表示
+# print('Class labels', np.unique(df_wine['Class label']))
+# # wineデータセットの先頭５行を表示
+# print(df_wine.head())
+
+# scikit-learnのmodel_selectionサブモジュールを用いて訓練データとテストデータに分割
+# 特徴量とクラスラベルを別々に抽出
+X, y = df_wine.iloc[:, 1:].values, df_wine.iloc[:, 0].values
+# 訓練データとテストデータに分割（全体の30%をテストデータにする）
+# オプション
+# test_size：テストデータに割り当てるサンプル数の割合
+# stratify：訓練データセットとテストデータセットのクラス比率をもとのデータセットと同じに成るように設定
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0, stratify=y)
