@@ -52,33 +52,33 @@ import numpy as np
 # pandasを使った平均値補完
 # print(df.fillna(df.mean()))
 
-# カテゴリデータのエンコーディング
-# サンプルデータを生成
-df = pd.DataFrame([
-    ['green', 'M', 10.1, 'class2'],
-    ['red', 'L', 13.5, 'class1'],
-    ['blue', 'XL', 15.3, 'class2']
-])
-# 列名を設定
-df.columns = ['color', 'size', 'price', 'classlabel']
-# print(df)
+# # カテゴリデータのエンコーディング
+# # サンプルデータを生成
+# df = pd.DataFrame([
+#     ['green', 'M', 10.1, 'class2'],
+#     ['red', 'L', 13.5, 'class1'],
+#     ['blue', 'XL', 15.3, 'class2']
+# ])
+# # 列名を設定
+# df.columns = ['color', 'size', 'price', 'classlabel']
+# # print(df)
 
 # # 順序特徴量を生成
-# Tシャツのサイズと整数を対応させるディクショナリを生成
-size_mapping = {'XL': 3, 'L': 2, 'M': 1}
-# Tシャツのサイズを整数に変換
-df['size'] = df['size'].map(size_mapping)
+# # Tシャツのサイズと整数を対応させるディクショナリを生成
+# size_mapping = {'XL': 3, 'L': 2, 'M': 1}
+# # Tシャツのサイズを整数に変換
+# df['size'] = df['size'].map(size_mapping)
 # print(df)
 # # 整数値を文字列表現に戻す
 # inv_size_mapping = {v: k for k, v in size_mapping.items()}
 # df['size'] = df['size'].map(inv_size_mapping)
 # print(df)
 
-# クラスラベルをエンコーディング
-class_mapping = {label: idx for idx, label in enumerate(np.unique(df['classlabel']))}
-# print(class_mapping)
-# クラスラベルを整数に変換
-df['classlabel'] = df['classlabel'].map(class_mapping)
+# # クラスラベルをエンコーディング
+# class_mapping = {label: idx for idx, label in enumerate(np.unique(df['classlabel']))}
+# # print(class_mapping)
+# # クラスラベルを整数に変換
+# df['classlabel'] = df['classlabel'].map(class_mapping)
 # print(df)
 # # 整数とクラスラベルを対応させるディクショナリを生成
 # inv_class_mapping = {v: k for k, v in class_mapping.items()}
@@ -112,7 +112,7 @@ df['classlabel'] = df['classlabel'].map(class_mapping)
 
 # # 複数の特徴量からなる配列の列を選択的に変換
 # # Tシャツの色、サイズ、価格を抽出
-X = df[['color', 'size', 'price']].values
+# X = df[['color', 'size', 'price']].values
 # # columnTransformerの生成
 # c_transf = ColumnTransformer([('onehot', OneHotEncoder(), [0]), ('nothing', 'passthrough', [1, 2])])
 # # 複数の特徴量からなる配列の列を選択的にonehotで変換
@@ -124,7 +124,20 @@ X = df[['color', 'size', 'price']].values
 # # 1列目を削除したone-hotエンコーディング
 # print(pd.get_dummies(df[['price', 'color', 'size']], drop_first=True))
 
-# OneHotEncoderを用いて冗長な列を削除
-color_ohe = OneHotEncoder(categories='auto', drop='first')
-c_transf = ColumnTransformer([('onehot', color_ohe, [0]), ('nothing', 'passthrough', [1, 2])])
-print(c_transf.fit_transform(X).astype(float))
+# # OneHotEncoderを用いて冗長な列を削除
+# color_ohe = OneHotEncoder(categories='auto', drop='first')
+# c_transf = ColumnTransformer([('onehot', color_ohe, [0]), ('nothing', 'passthrough', [1, 2])])
+# print(c_transf.fit_transform(X).astype(float))
+
+# pandasライブラリを使ってUGI Machine Learning RepositoryからWineデータセットを直接読み込む
+# wineデータセットを読み込む
+df_wine = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine.data', header=None)
+# 列名を指定
+df_wine.columns = ['Class label', 'Alcohol', 'Malic acid', 'Ash',
+    'Alcalinity of ash', 'Magnesium', 'Total phenols', 'Flavanoids',
+    'Nonflavanoid phenols', 'Proanthocyanins', 'Color intensity', 'Hue',
+    'OD280/OD315 of diluted wines', 'Proline']
+# クラスラベルを表示
+print('Class labels', np.unique(df_wine['Class label']))
+# wineデータセットの先頭５行を表示
+print(df_wine.head())
