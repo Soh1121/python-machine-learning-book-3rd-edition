@@ -181,4 +181,15 @@ X_test_std = stdsc.fit_transform(X_test)
 # print(X_test_std)
 
 # L1正則化ロジスティック回帰のインスタンスを生成
-LogisticRegression(penalty='l1', solver='liblinear', multi_class='ovr')
+# LogisticRegression(penalty='l1', solver='liblinear', multi_class='ovr')
+
+# L1正則化ロジスティック回帰のインスタンスを生成：逆正則化パラメータC=1.0はデフォルト値であり、
+# 値を大きくしたり小さくしたりすると、正則化の効果を強めたり弱めたりできる
+lr = LogisticRegression(penalty='l1', C=1.0, solver='liblinear', multi_class='ovr')
+# 訓練データに適合
+lr.fit(X_train_std, y_train)
+# 訓練データに対する正解率の表示
+print('Training accuracy:', lr.score(X_train_std, y_train))
+
+# テストデータに対する正解率の表示
+print('Test accuracy:', lr.score(X_test_std, y_test))
