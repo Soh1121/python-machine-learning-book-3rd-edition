@@ -159,7 +159,12 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_
 mms = MinMaxScaler()
 # 訓練データをスケーリング
 X_train_norm = mms.fit_transform(X_train)
-print(X_train_norm)
+# print(X_train_norm)
 # テストデータをスケーリング
 X_test_norm = mms.fit_transform(X_test)
-print(X_test_norm)
+# print(X_test_norm)
+
+# 標準化と正規化を実際に計算
+ex = np.array([0, 1, 2, 3, 4, 5])
+print('standardized:', (ex - ex.mean()) / ex.std())
+print('normalized:', (ex - ex.min()) / (ex.max() - ex.min()))
