@@ -16,6 +16,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 # 標準化を行うためにsklearnのpreprocessingモジュールからStandardScalerをインポート
 from sklearn.preprocessing import StandardScaler
+# L1正則化をロジスティック回帰で用いるためにscikit-learnのlinear_modelモジュールからLogisticRegressionをインポート
+from sklearn.linear_model import LogisticRegression
 # ndarayを扱うためにnumpyをnpとしてインポートする
 import numpy as np
 
@@ -174,6 +176,9 @@ X_test_norm = mms.fit_transform(X_test)
 # scikit-learnを用いた標準化
 stdsc = StandardScaler()
 X_train_std = stdsc.fit_transform(X_train)
-print(X_train_std)
+# print(X_train_std)
 X_test_std = stdsc.fit_transform(X_test)
-print(X_test_std)
+# print(X_test_std)
+
+# L1正則化ロジスティック回帰のインスタンスを生成
+LogisticRegression(penalty='l1', solver='liblinear', multi_class='ovr')
