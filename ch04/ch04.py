@@ -14,6 +14,8 @@ from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import train_test_split
 # 正規化を行うためにsklearnのpreprocesingモジュールからMinMaxScalerをインポート
 from sklearn.preprocessing import MinMaxScaler
+# 標準化を行うためにsklearnのpreprocessingモジュールからStandardScalerをインポート
+from sklearn.preprocessing import StandardScaler
 # ndarayを扱うためにnumpyをnpとしてインポートする
 import numpy as np
 
@@ -164,7 +166,14 @@ X_train_norm = mms.fit_transform(X_train)
 X_test_norm = mms.fit_transform(X_test)
 # print(X_test_norm)
 
-# 標準化と正規化を実際に計算
-ex = np.array([0, 1, 2, 3, 4, 5])
-print('standardized:', (ex - ex.mean()) / ex.std())
-print('normalized:', (ex - ex.min()) / (ex.max() - ex.min()))
+# # 標準化と正規化を実際に計算
+# ex = np.array([0, 1, 2, 3, 4, 5])
+# print('standardized:', (ex - ex.mean()) / ex.std())
+# print('normalized:', (ex - ex.min()) / (ex.max() - ex.min()))
+
+# scikit-learnを用いた標準化
+stdsc = StandardScaler()
+X_train_std = stdsc.fit_transform(X_train)
+print(X_train_std)
+X_test_std = stdsc.fit_transform(X_test)
+print(X_test_std)
