@@ -12,6 +12,8 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
 # 訓練データとテストデータに分割するためにscikit-learnのmodel_selectionモジュールからtrain_test_splitをインポート
 from sklearn.model_selection import train_test_split
+# 正規化を行うためにsklearnのpreprocesingモジュールからMinMaxScalerをインポート
+from sklearn.preprocessing import MinMaxScaler
 # ndarayを扱うためにnumpyをnpとしてインポートする
 import numpy as np
 
@@ -152,3 +154,12 @@ X, y = df_wine.iloc[:, 1:].values, df_wine.iloc[:, 0].values
 # test_size：テストデータに割り当てるサンプル数の割合
 # stratify：訓練データセットとテストデータセットのクラス比率をもとのデータセットと同じに成るように設定
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0, stratify=y)
+
+# scikit-learnを用いた正規化
+mms = MinMaxScaler()
+# 訓練データをスケーリング
+X_train_norm = mms.fit_transform(X_train)
+print(X_train_norm)
+# テストデータをスケーリング
+X_test_norm = mms.fit_transform(X_test)
+print(X_test_norm)
