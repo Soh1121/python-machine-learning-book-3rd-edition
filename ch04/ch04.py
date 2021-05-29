@@ -189,7 +189,10 @@ lr = LogisticRegression(penalty='l1', C=1.0, solver='liblinear', multi_class='ov
 # 訓練データに適合
 lr.fit(X_train_std, y_train)
 # 訓練データに対する正解率の表示
-print('Training accuracy:', lr.score(X_train_std, y_train))
+# print('Training accuracy:', lr.score(X_train_std, y_train))
 
 # テストデータに対する正解率の表示
-print('Test accuracy:', lr.score(X_test_std, y_test))
+# print('Test accuracy:', lr.score(X_test_std, y_test))
+
+# モデルの切片を確認
+print(lr.intercept_)
