@@ -195,4 +195,7 @@ lr.fit(X_train_std, y_train)
 # print('Test accuracy:', lr.score(X_test_std, y_test))
 
 # モデルの切片を確認
-print(lr.intercept_)
+# print(lr.intercept_)
+
+# モデルの重み係数の表示
+print(lr.coef_)
