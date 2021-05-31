@@ -18,10 +18,18 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
 # L1正則化をロジスティック回帰で用いるためにscikit-learnのlinear_modelモジュールからLogisticRegressionをインポート
 from sklearn.linear_model import LogisticRegression
+# デフォルトの特徴量を評価する指標のためにscikit-learnのmetricsモジュールからaccuracy_scoreをインポートする
+from sklearn.metrics import accuracy_score
+# 推定器のモデルをディープコピーするためにscikit-learnのbaseモジュールからcloneをインポート
+from sklearn.base import clone
+# k最近傍法分類機を用いるためにscikit-learnのneighborsモジュールからKNeighborsClassifierをインポート
+from sklearn.neighbors import KNeighborsClassifier
 # 正則化パスをプロットするためにmatplotlibのpyplotモジュールをpltとしてインポート
 import matplotlib.pyplot as plt
 # ndarayを扱うためにnumpyをnpとしてインポートする
 import numpy as np
+# 特徴量の組み合わせを作成するためにitertoolsからcombinationsをインポート
+from itertools import combinations
 
 
 # # 表形式のデータで欠損値を見てみる
@@ -202,41 +210,116 @@ X_test_std = stdsc.fit_transform(X_test)
 # # モデルの重み係数の表示
 # print(lr.coef_)
 
-# 描画の準備
-fig = plt.figure()
-ax = plt.subplot(111)
-# 各係数の色のリスト
-colors = ['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black',
-          'pink', 'lightgreen', 'lightblue', 'gray', 'indigo', 'orange']
-# 空のリストを生成（重み係数、逆正則化パラメータ）
-weights, params = [], []
-# 逆正則化パラメータの値ごとに処理
-for c in np.arange(-4., 6.):
-    lr = LogisticRegression(penalty='l1', C=10.**c, solver='liblinear', multi_class='ovr', random_state=0)
-    lr.fit(X_train_std, y_train)
-    weights.append(lr.coef_[1])
-    params.append(10**c)
+# # 描画の準備
+# fig = plt.figure()
+# ax = plt.subplot(111)
+# # 各係数の色のリスト
+# colors = ['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black',
+#           'pink', 'lightgreen', 'lightblue', 'gray', 'indigo', 'orange']
+# # 空のリストを生成（重み係数、逆正則化パラメータ）
+# weights, params = [], []
+# # 逆正則化パラメータの値ごとに処理
+# for c in np.arange(-4., 6.):
+#     lr = LogisticRegression(penalty='l1', C=10.**c, solver='liblinear', multi_class='ovr', random_state=0)
+#     lr.fit(X_train_std, y_train)
+#     weights.append(lr.coef_[1])
+#     params.append(10**c)
 
-# 重み係数をNumPy配列に変換
-weights = np.array(weights)
-# 各重み係数をプロット
-for column, color in zip(range(weights.shape[1]), colors):
-    # 横軸を逆正則化パラメータ、縦軸を重み係数とした主線グラフ
-    plt.plot(params, weights[:, column], label=df_wine.columns[column+1], color=color)
+# # 重み係数をNumPy配列に変換
+# weights = np.array(weights)
+# # 各重み係数をプロット
+# for column, color in zip(range(weights.shape[1]), colors):
+#     # 横軸を逆正則化パラメータ、縦軸を重み係数とした主線グラフ
+#     plt.plot(params, weights[:, column], label=df_wine.columns[column+1], color=color)
 
-# y=0に黒い波線を引く
-plt.axhline(0, color='black', linestyle='--', linewidth=3)
-# 横軸の範囲の設定
-plt.xlim([10**(-5), 10**5])
-# 軸のラベルを設定
-plt.ylabel('weight coefficient')
-plt.xlabel('C')
-# 横軸を対数スケールに設定
-plt.xscale('log')
-# 凡例を表示
-plt.legend()
-# グラフ外に凡例を移動
-ax.legend(loc='upper center', bbox_to_anchor=(1.38, 1.03), ncol=1, fancybox=True)
-# プロットの表示
-plt.tight_layout()
-plt.show()
+# # y=0に黒い波線を引く
+# plt.axhline(0, color='black', linestyle='--', linewidth=3)
+# # 横軸の範囲の設定
+# plt.xlim([10**(-5), 10**5])
+# # 軸のラベルを設定
+# plt.ylabel('weight coefficient')
+# plt.xlabel('C')
+# # 横軸を対数スケールに設定
+# plt.xscale('log')
+# # 凡例を表示
+# plt.legend()
+# # グラフ外に凡例を移動
+# ax.legend(loc='upper center', bbox_to_anchor=(1.38, 1.03), ncol=1, fancybox=True)
+# # プロットの表示
+# plt.tight_layout()
+# plt.show()
+
+
+# 逐次後退選択（SBS）アルゴリズムの実装
+class SBS():
+    """
+    逐次後退選択（sequential backward selection）を実行するクラス
+    """
+
+    def __init__(self, estimator, k_features, scoring=accuracy_score, test_size=0.25, random_state=1):
+        self.scoring = scoring              # 特徴量を評価する指標
+        self.estimator = clone(estimator)   # 推定器をディープコピー
+        self.k_features = k_features        # 選択する特徴量の数
+        self.test_size = test_size          # テストデータの割合
+        self.random_state = random_state    # 乱数シードを固定するrandom_state
+
+    def fit(self, X, y):
+        # 訓練データとテストデータに分割
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=self.test_size, random_state=self.random_state)
+        # すべての特徴量の個数、列インデックス
+        dim = X_train.shape[1]
+        self.indices_ = tuple(range(dim))
+        self.subsets_ = [self.indices_]
+        # すべての特徴量を用いてスコアを算出
+        score = self._calc_score(X_train, y_train, X_test, y_test, self.indices_)
+        # スコアを格納
+        self.scores_ = [score]
+        # 特徴量が指定した個数に成るまで処理を繰り返す
+        while self.k_features < dim:
+            # 空のスコアリストを作成
+            scores = []
+            # 空の列インデックスリストを作成
+            subsets = []
+            # 特徴量の部分集合を表す列インデックスの組み合わせごとに処理を反復
+            for p in combinations(self.indices_, r=dim - 1):
+                # スコアを算出して格納
+                score = self._calc_score(X_train, y_train, X_test, y_test, self.indices_)
+                scores.append(score)
+                # 特徴量の部分集合を表す列インデックスのリストを格納
+                subsets.append(p)
+
+            # 最良のスコアのインデックスを抽出
+            best = np.argmax(scores)
+            # 最良のスコアとなる列インデックスを抽出して格納
+            self.indices_ = subsets[best]
+            self.subsets_.append(self.indices_)
+            # 特徴量の個数を１つだけ減らして次のステップへ
+            dim -= 1
+            # スコアを格納
+            self.scores_.append(scores[best])
+
+        # 最後に格納したスコア
+        self.k_score_ = self.scores_[-1]
+        return self
+
+    def transform(self, X):
+        # 抽出した特徴量を返す
+        return X[:, self.indices_]
+
+    def _calc_score(self, X_train, y_train, X_test, y_test, indices):
+        # 指定された列番号indicesの特徴量を抽出してモデルを適合
+        self.estimator.fit(X_train[:, indices], y_train)
+        # テストデータを用いてクラスラベルを予測
+        y_pred = self.estimator.predict(X_test[:, indices])
+        # 真のラベルと予測値を用いてスコアを算出
+        score = self.scoring(y_test, y_pred)
+        return score
+
+
+# k最近傍法分類器のインスタンスを生成（近傍点数=5）
+knn = KNeighborsClassifier(n_neighbors=5)
+# 逐次後退選択のインスタンスを生成（特徴量の個数が1になるまで特徴量を選択）
+sbs = SBS(knn, k_features=1)
+# 逐次後退選択を実行
+sbs.fit(X_train_std, y_train)
