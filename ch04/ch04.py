@@ -393,5 +393,12 @@ sbs.fit(X_train_std, y_train)
 # 13個の特徴量から順次減らしているため、k=3のときの特徴量はリストのindex=10に保存されている
 k3 = list(sbs.subsets_[10])
 # 3個の特徴量が何か表示
-print(df_wine.columns[1:][k3])
+# print(df_wine.columns[1:][k3])
 
+# 元のテストデータセットでKNN分類機の性能を確認
+# 13個のすべての特徴量を用いてモデルを適合
+knn.fit(X_train_std, y_train)
+# 訓練の正解率を出力
+print('Train accuracy:', knn.score(X_train_std, y_train))
+# テストの正解率を出力
+print('Test accuracy:', knn.score(X_test_std, y_test))
