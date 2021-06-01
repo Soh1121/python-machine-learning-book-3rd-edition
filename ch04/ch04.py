@@ -251,68 +251,119 @@ X_test_std = stdsc.fit_transform(X_test)
 
 
 # 逐次後退選択（SBS）アルゴリズムの実装
-class SBS():
-    """
-    逐次後退選択（sequential backward selection）を実行するクラス
-    """
+# class SBS():
+#     """
+#     逐次後退選択（sequential backward selection）を実行するクラス
+#     """
 
-    def __init__(self, estimator, k_features, scoring=accuracy_score, test_size=0.25, random_state=1):
-        self.scoring = scoring              # 特徴量を評価する指標
-        self.estimator = clone(estimator)   # 推定器をディープコピー
-        self.k_features = k_features        # 選択する特徴量の数
-        self.test_size = test_size          # テストデータの割合
-        self.random_state = random_state    # 乱数シードを固定するrandom_state
+#     def __init__(self, estimator, k_features, scoring=accuracy_score, test_size=0.25, random_state=1):
+#         self.scoring = scoring              # 特徴量を評価する指標
+#         self.estimator = clone(estimator)   # 推定器をディープコピー
+#         self.k_features = k_features        # 選択する特徴量の数
+#         self.test_size = test_size          # テストデータの割合
+#         self.random_state = random_state    # 乱数シードを固定するrandom_state
+
+#     def fit(self, X, y):
+#         # 訓練データとテストデータに分割
+#         X_train, X_test, y_train, y_test = train_test_split(
+#             X, y, test_size=self.test_size, random_state=self.random_state)
+#         # すべての特徴量の個数、列インデックス
+#         dim = X_train.shape[1]
+#         self.indices_ = tuple(range(dim))
+#         self.subsets_ = [self.indices_]
+#         # すべての特徴量を用いてスコアを算出
+#         score = self._calc_score(X_train, y_train, X_test, y_test, self.indices_)
+#         # スコアを格納
+#         self.scores_ = [score]
+#         # 特徴量が指定した個数に成るまで処理を繰り返す
+#         while self.k_features < dim:
+#             # 空のスコアリストを作成
+#             scores = []
+#             # 空の列インデックスリストを作成
+#             subsets = []
+#             # 特徴量の部分集合を表す列インデックスの組み合わせごとに処理を反復
+#             for p in combinations(self.indices_, r=dim - 1):
+#                 # スコアを算出して格納
+#                 score = self._calc_score(X_train, y_train, X_test, y_test, self.indices_)
+#                 scores.append(score)
+#                 # 特徴量の部分集合を表す列インデックスのリストを格納
+#                 subsets.append(p)
+
+#             # 最良のスコアのインデックスを抽出
+#             best = np.argmax(scores)
+#             # 最良のスコアとなる列インデックスを抽出して格納
+#             self.indices_ = subsets[best]
+#             self.subsets_.append(self.indices_)
+#             # 特徴量の個数を１つだけ減らして次のステップへ
+#             dim -= 1
+#             # スコアを格納
+#             self.scores_.append(scores[best])
+
+#         # 最後に格納したスコア
+#         self.k_score_ = self.scores_[-1]
+#         return self
+
+#     def transform(self, X):
+#         # 抽出した特徴量を返す
+#         return X[:, self.indices_]
+
+#     def _calc_score(self, X_train, y_train, X_test, y_test, indices):
+#         # 指定された列番号indicesの特徴量を抽出してモデルを適合
+#         self.estimator.fit(X_train[:, indices], y_train)
+#         # テストデータを用いてクラスラベルを予測
+#         y_pred = self.estimator.predict(X_test[:, indices])
+#         # 真のラベルと予測値を用いてスコアを算出
+#         score = self.scoring(y_test, y_pred)
+#         return score
+
+
+class SBS():
+    def __init__(self, estimator, k_features, scoring=accuracy_score,
+                 test_size=0.25, random_state=1):
+        self.scoring = scoring
+        self.estimator = clone(estimator)
+        self.k_features = k_features
+        self.test_size = test_size
+        self.random_state = random_state
 
     def fit(self, X, y):
-        # 訓練データとテストデータに分割
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=self.test_size, random_state=self.random_state)
-        # すべての特徴量の個数、列インデックス
+
+        X_train, X_test, y_train, y_test =             train_test_split(X, y, test_size=self.test_size,
+                             random_state=self.random_state)
+
         dim = X_train.shape[1]
         self.indices_ = tuple(range(dim))
         self.subsets_ = [self.indices_]
-        # すべての特徴量を用いてスコアを算出
-        score = self._calc_score(X_train, y_train, X_test, y_test, self.indices_)
-        # スコアを格納
+        score = self._calc_score(X_train, y_train,
+                                 X_test, y_test, self.indices_)
         self.scores_ = [score]
-        # 特徴量が指定した個数に成るまで処理を繰り返す
-        while self.k_features < dim:
-            # 空のスコアリストを作成
+
+        while dim > self.k_features:
             scores = []
-            # 空の列インデックスリストを作成
             subsets = []
-            # 特徴量の部分集合を表す列インデックスの組み合わせごとに処理を反復
+
             for p in combinations(self.indices_, r=dim - 1):
-                # スコアを算出して格納
-                score = self._calc_score(X_train, y_train, X_test, y_test, self.indices_)
+                score = self._calc_score(X_train, y_train,
+                                         X_test, y_test, p)
                 scores.append(score)
-                # 特徴量の部分集合を表す列インデックスのリストを格納
                 subsets.append(p)
 
-            # 最良のスコアのインデックスを抽出
             best = np.argmax(scores)
-            # 最良のスコアとなる列インデックスを抽出して格納
             self.indices_ = subsets[best]
             self.subsets_.append(self.indices_)
-            # 特徴量の個数を１つだけ減らして次のステップへ
             dim -= 1
-            # スコアを格納
-            self.scores_.append(scores[best])
 
-        # 最後に格納したスコア
+            self.scores_.append(scores[best])
         self.k_score_ = self.scores_[-1]
+
         return self
 
     def transform(self, X):
-        # 抽出した特徴量を返す
         return X[:, self.indices_]
 
     def _calc_score(self, X_train, y_train, X_test, y_test, indices):
-        # 指定された列番号indicesの特徴量を抽出してモデルを適合
         self.estimator.fit(X_train[:, indices], y_train)
-        # テストデータを用いてクラスラベルを予測
         y_pred = self.estimator.predict(X_test[:, indices])
-        # 真のラベルと予測値を用いてスコアを算出
         score = self.scoring(y_test, y_pred)
         return score
 
@@ -323,3 +374,18 @@ knn = KNeighborsClassifier(n_neighbors=5)
 sbs = SBS(knn, k_features=1)
 # 逐次後退選択を実行
 sbs.fit(X_train_std, y_train)
+
+# 特徴量の個数のリスト
+k_feat = [len(k) for k in sbs.subsets_]
+# 横軸を特徴量の個数、縦軸をスコアとした折れ線グラフのプロット
+plt.plot(k_feat, sbs.scores_, marker='o')
+# y軸の上限下限を設定
+plt.ylim([0.7, 1.02])
+# 各軸のラベルを設定
+plt.ylabel('Accuracy')
+plt.xlabel('Number of features')
+# グリッドを表示
+plt.grid()
+# プロットを表示
+plt.tight_layout()
+plt.show()
