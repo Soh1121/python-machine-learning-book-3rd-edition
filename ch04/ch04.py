@@ -375,17 +375,23 @@ sbs = SBS(knn, k_features=1)
 # 逐次後退選択を実行
 sbs.fit(X_train_std, y_train)
 
-# 特徴量の個数のリスト
-k_feat = [len(k) for k in sbs.subsets_]
-# 横軸を特徴量の個数、縦軸をスコアとした折れ線グラフのプロット
-plt.plot(k_feat, sbs.scores_, marker='o')
-# y軸の上限下限を設定
-plt.ylim([0.7, 1.02])
-# 各軸のラベルを設定
-plt.ylabel('Accuracy')
-plt.xlabel('Number of features')
-# グリッドを表示
-plt.grid()
-# プロットを表示
-plt.tight_layout()
-plt.show()
+# # 特徴量の個数のリスト
+# k_feat = [len(k) for k in sbs.subsets_]
+# # 横軸を特徴量の個数、縦軸をスコアとした折れ線グラフのプロット
+# plt.plot(k_feat, sbs.scores_, marker='o')
+# # y軸の上限下限を設定
+# plt.ylim([0.7, 1.02])
+# # 各軸のラベルを設定
+# plt.ylabel('Accuracy')
+# plt.xlabel('Number of features')
+# # グリッドを表示
+# plt.grid()
+# # プロットを表示
+# plt.tight_layout()
+# plt.show()
+
+# 13個の特徴量から順次減らしているため、k=3のときの特徴量はリストのindex=10に保存されている
+k3 = list(sbs.subsets_[10])
+# 3個の特徴量が何か表示
+print(df_wine.columns[1:][k3])
+
