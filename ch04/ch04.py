@@ -24,6 +24,8 @@ from sklearn.metrics import accuracy_score
 from sklearn.base import clone
 # k最近傍法分類機を用いるためにscikit-learnのneighborsモジュールからKNeighborsClassifierをインポート
 from sklearn.neighbors import KNeighborsClassifier
+# 特徴量の重要度を評価するため、scikit-learnのensembleモジュールからRandomForestClassifierをインポート
+from sklearn.ensemble import RandomForestClassifier
 # 正則化パスをプロットするためにmatplotlibのpyplotモジュールをpltとしてインポート
 import matplotlib.pyplot as plt
 # ndarayを扱うためにnumpyをnpとしてインポートする
@@ -368,44 +370,70 @@ class SBS():
         return score
 
 
-# k最近傍法分類器のインスタンスを生成（近傍点数=5）
-knn = KNeighborsClassifier(n_neighbors=5)
-# 逐次後退選択のインスタンスを生成（特徴量の個数が1になるまで特徴量を選択）
-sbs = SBS(knn, k_features=1)
-# 逐次後退選択を実行
-sbs.fit(X_train_std, y_train)
+# # k最近傍法分類器のインスタンスを生成（近傍点数=5）
+# knn = KNeighborsClassifier(n_neighbors=5)
+# # 逐次後退選択のインスタンスを生成（特徴量の個数が1になるまで特徴量を選択）
+# sbs = SBS(knn, k_features=1)
+# # 逐次後退選択を実行
+# sbs.fit(X_train_std, y_train)
 
-# # 特徴量の個数のリスト
-# k_feat = [len(k) for k in sbs.subsets_]
-# # 横軸を特徴量の個数、縦軸をスコアとした折れ線グラフのプロット
-# plt.plot(k_feat, sbs.scores_, marker='o')
-# # y軸の上限下限を設定
-# plt.ylim([0.7, 1.02])
-# # 各軸のラベルを設定
-# plt.ylabel('Accuracy')
-# plt.xlabel('Number of features')
-# # グリッドを表示
-# plt.grid()
-# # プロットを表示
-# plt.tight_layout()
-# plt.show()
+# # # 特徴量の個数のリスト
+# # k_feat = [len(k) for k in sbs.subsets_]
+# # # 横軸を特徴量の個数、縦軸をスコアとした折れ線グラフのプロット
+# # plt.plot(k_feat, sbs.scores_, marker='o')
+# # # y軸の上限下限を設定
+# # plt.ylim([0.7, 1.02])
+# # # 各軸のラベルを設定
+# # plt.ylabel('Accuracy')
+# # plt.xlabel('Number of features')
+# # # グリッドを表示
+# # plt.grid()
+# # # プロットを表示
+# # plt.tight_layout()
+# # plt.show()
 
-# 13個の特徴量から順次減らしているため、k=3のときの特徴量はリストのindex=10に保存されている
-k3 = list(sbs.subsets_[10])
-# 3個の特徴量が何か表示
-# print(df_wine.columns[1:][k3])
+# # 13個の特徴量から順次減らしているため、k=3のときの特徴量はリストのindex=10に保存されている
+# k3 = list(sbs.subsets_[10])
+# # 3個の特徴量が何か表示
+# # print(df_wine.columns[1:][k3])
 
-# 元のテストデータセットでKNN分類器の性能を確認
-# 13個のすべての特徴量を用いてモデルを適合
-knn.fit(X_train_std, y_train)
-# 訓練の正解率を出力
-print('Train accuracy:', knn.score(X_train_std, y_train))
-# テストの正解率を出力
-print('Test accuracy:', knn.score(X_test_std, y_test))
+# # 元のテストデータセットでKNN分類器の性能を確認
+# # 13個のすべての特徴量を用いてモデルを適合
+# knn.fit(X_train_std, y_train)
+# # 訓練の正解率を出力
+# print('Train accuracy:', knn.score(X_train_std, y_train))
+# # テストの正解率を出力
+# print('Test accuracy:', knn.score(X_test_std, y_test))
 
-# 3つの特徴量を用いてモデルを適合
-knn.fit(X_train_std[:, k3], y_train)
-# 訓練の正解率を出力
-print('Train accuracy:', knn.score(X_train_std[:, k3], y_train))
-# テストの正解率を出力
-print('Test accuracy:', knn.score(X_test_std[:, k3], y_test))
+# # 3つの特徴量を用いてモデルを適合
+# knn.fit(X_train_std[:, k3], y_train)
+# # 訓練の正解率を出力
+# print('Train accuracy:', knn.score(X_train_std[:, k3], y_train))
+# # テストの正解率を出力
+# print('Test accuracy:', knn.score(X_test_std[:, k3], y_test))
+
+# ランダムフォレストで特徴量の重要度を評価する
+# Wineデータセットの特徴量の名称
+feat_labels = df_wine.columns[1:]
+# ランダムフォレストオブジェクトの生成（決定木の個数=500）
+forest = RandomForestClassifier(n_estimators=500, random_state=1)
+# モデルを適合
+forest.fit(X_train, y_train)
+# 特徴量の重要度を抽出
+importances = forest.feature_importances_
+# 重要度の降順で特徴量のインデックスを抽出
+indices = np.argsort(importances)[::-1]
+# 重要度の降順で特徴量の名称、重要度を表示
+for f in range(X_train.shape[1]):
+    print("%2d) %-*s %f" % (f + 1, 30, feat_labels[indices[f]], importances[indices[f]]))
+# プロットのタイトルを表示
+plt.title('Feature Importances')
+# 特徴量の重要度を降順で棒グラフ作成
+plt.bar(range(X_train.shape[1]), importances[indices], align='center')
+# X軸のラベルを設定
+plt.xticks(range(X_train.shape[1]), feat_labels[indices], rotation=90)
+# x軸の上限、下限を設定
+plt.xlim([-1, X_train.shape[1]])
+# プロットを表示
+plt.tight_layout()
+plt.show()
