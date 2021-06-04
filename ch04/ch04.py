@@ -26,6 +26,8 @@ from sklearn.base import clone
 from sklearn.neighbors import KNeighborsClassifier
 # 特徴量の重要度を評価するため、scikit-learnのensembleモジュールからRandomForestClassifierをインポート
 from sklearn.ensemble import RandomForestClassifier
+# 重要な特徴量のみを抽出するためにscikit-learnのfeature_selectionモジュールからSelectFromModeをインポート
+from sklearn.feature_selection import SelectFromModel
 # 正則化パスをプロットするためにmatplotlibのpyplotモジュールをpltとしてインポート
 import matplotlib.pyplot as plt
 # ndarayを扱うためにnumpyをnpとしてインポートする
@@ -419,21 +421,31 @@ feat_labels = df_wine.columns[1:]
 forest = RandomForestClassifier(n_estimators=500, random_state=1)
 # モデルを適合
 forest.fit(X_train, y_train)
-# 特徴量の重要度を抽出
+# # 特徴量の重要度を抽出
 importances = forest.feature_importances_
-# 重要度の降順で特徴量のインデックスを抽出
+# # 重要度の降順で特徴量のインデックスを抽出
 indices = np.argsort(importances)[::-1]
-# 重要度の降順で特徴量の名称、重要度を表示
-for f in range(X_train.shape[1]):
+# # 重要度の降順で特徴量の名称、重要度を表示
+# for f in range(X_train.shape[1]):
+#     print("%2d) %-*s %f" % (f + 1, 30, feat_labels[indices[f]], importances[indices[f]]))
+# # プロットのタイトルを表示
+# plt.title('Feature Importances')
+# # 特徴量の重要度を降順で棒グラフ作成
+# plt.bar(range(X_train.shape[1]), importances[indices], align='center')
+# # X軸のラベルを設定
+# plt.xticks(range(X_train.shape[1]), feat_labels[indices], rotation=90)
+# # x軸の上限、下限を設定
+# plt.xlim([-1, X_train.shape[1]])
+# # プロットを表示
+# plt.tight_layout()
+# plt.show()
+
+# ランダムフォレストで算出した特徴量の重要度を元に、しきい値を設定して重要な特徴量のみを抽出
+# 特徴量選択オブジェクトを生成（重要度のしきい値を0.1に設定）
+sfm = SelectFromModel(forest, threshold=0.1, prefit=True)
+# 特徴量を抽出
+X_selected = sfm.transform(X_train)
+print('Number of features that meen this threshold criterion:', X_selected.shape[1])
+# 抽出された特徴量を順に表示
+for f in range(X_selected.shape[1]):
     print("%2d) %-*s %f" % (f + 1, 30, feat_labels[indices[f]], importances[indices[f]]))
-# プロットのタイトルを表示
-plt.title('Feature Importances')
-# 特徴量の重要度を降順で棒グラフ作成
-plt.bar(range(X_train.shape[1]), importances[indices], align='center')
-# X軸のラベルを設定
-plt.xticks(range(X_train.shape[1]), feat_labels[indices], rotation=90)
-# x軸の上限、下限を設定
-plt.xlim([-1, X_train.shape[1]])
-# プロットを表示
-plt.tight_layout()
-plt.show()
