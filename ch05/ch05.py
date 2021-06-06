@@ -58,4 +58,7 @@ eigen_pairs.sort(key=lambda k: k[0], reverse=True)
 
 # 固有ベクトルから射影行列Wを作成
 w = np.hstack((eigen_pairs[0][1][:, np.newaxis], eigen_pairs[1][1][:, np.newaxis]))
-print('Matrix W:\n', w)
+# print('Matrix W:\n', w)
+
+# 0行目のデータに対し、射影行列を用いてデータを変換
+print(X_train_std[0].dot(w))
