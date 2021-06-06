@@ -30,22 +30,28 @@ cov_mat = np.cov(X_train_std.T)
 eigen_vals, eigen_vecs = np.linalg.eig(cov_mat)
 # print('\nEigenvalues \n%s' % eigen_vals)
 
-# 分散説明率の累積和を確認する
-# 固有値を計算
-tot = sum(eigen_vals)
-# 分散説明率を計算
-var_exp = [(i / tot) for i in sorted(eigen_vals, reverse=True)]
-# 分散説明率の累積和を取得
-cum_var_exp = np.cumsum(var_exp)
-# 分散説明率の棒グラフを作成
-plt.bar(range(1, 14), var_exp, alpha=0.5, align='center', label='Individual explained variance')
-# 分散説明率の累積和の階段グラフを作成
-plt.step(range(1, 14), cum_var_exp, where='mid', label='Cumlative explained variance')
-# ラベル名を設定
-plt.ylabel('Explained variance ratio')
-plt.xlabel('Principal component index')
-# 凡例を良きところに表示
-plt.legend(loc='best')
-# プロットを表示
-plt.tight_layout()
-plt.show()
+# # 分散説明率の累積和を確認する
+# # 固有値を計算
+# tot = sum(eigen_vals)
+# # 分散説明率を計算
+# var_exp = [(i / tot) for i in sorted(eigen_vals, reverse=True)]
+# # 分散説明率の累積和を取得
+# cum_var_exp = np.cumsum(var_exp)
+# # 分散説明率の棒グラフを作成
+# plt.bar(range(1, 14), var_exp, alpha=0.5, align='center', label='Individual explained variance')
+# # 分散説明率の累積和の階段グラフを作成
+# plt.step(range(1, 14), cum_var_exp, where='mid', label='Cumlative explained variance')
+# # ラベル名を設定
+# plt.ylabel('Explained variance ratio')
+# plt.xlabel('Principal component index')
+# # 凡例を良きところに表示
+# plt.legend(loc='best')
+# # プロットを表示
+# plt.tight_layout()
+# plt.show()
+
+# 固有値の大きいものから順に固有対を並べ替える
+# (固有値, 固有ベクトル)のタプルのリストを作成
+eigen_pairs = [(np.abs(eigen_vals[i]), eigen_vecs[:, i]) for i in range(len(eigen_vals))]
+# (固有値, 固有ベクトル)のタプルを大きいものから順に並べ替え
+eigen_pairs.sort(key=lambda k: k[0], reverse=True)
