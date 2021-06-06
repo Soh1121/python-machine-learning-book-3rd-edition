@@ -124,11 +124,23 @@ pca = PCA(n_components=2)
 lr = LogisticRegression(multi_class='ovr', random_state=1, solver='lbfgs')
 # 次元削減
 X_train_pca = pca.fit_transform(X_train_std)
-X_test_pca = pca.fit_transform(X_test_std)
+X_test_pca = pca.transform(X_test_std)
 # 削減したデータセットでロジスティック回帰モデルを適合
 lr.fit(X_train_pca, y_train)
 # 決定領域をプロット
-plot_decision_regions(X_train_pca, y_train, classifier=lr)
+# plot_decision_regions(X_train_pca, y_train, classifier=lr)
+# # 軸のラベルを設定
+# plt.xlabel('PC1')
+# plt.ylabel('PC2')
+# # 凡例を左下に表示
+# plt.legend(loc='lower left')
+# # プロットを表示
+# plt.tight_layout()
+# plt.show()
+
+# テストデータでロジスティック回帰の結果を確認
+# 決定領域をプロット
+plot_decision_regions(X_test_pca, y_test, classifier=lr)
 # 軸のラベルを設定
 plt.xlabel('PC1')
 plt.ylabel('PC2')
