@@ -55,3 +55,7 @@ eigen_vals, eigen_vecs = np.linalg.eig(cov_mat)
 eigen_pairs = [(np.abs(eigen_vals[i]), eigen_vecs[:, i]) for i in range(len(eigen_vals))]
 # (固有値, 固有ベクトル)のタプルを大きいものから順に並べ替え
 eigen_pairs.sort(key=lambda k: k[0], reverse=True)
+
+# 固有ベクトルから射影行列Wを作成
+w = np.hstack((eigen_pairs[0][1][:, np.newaxis], eigen_pairs[1][1][:, np.newaxis]))
+print('Matrix W:\n', w)
