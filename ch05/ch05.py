@@ -138,14 +138,22 @@ lr.fit(X_train_pca, y_train)
 # plt.tight_layout()
 # plt.show()
 
-# テストデータでロジスティック回帰の結果を確認
-# 決定領域をプロット
-plot_decision_regions(X_test_pca, y_test, classifier=lr)
-# 軸のラベルを設定
-plt.xlabel('PC1')
-plt.ylabel('PC2')
-# 凡例を左下に表示
-plt.legend(loc='lower left')
-# プロットを表示
-plt.tight_layout()
-plt.show()
+# # テストデータでロジスティック回帰の結果を確認
+# # 決定領域をプロット
+# plot_decision_regions(X_test_pca, y_test, classifier=lr)
+# # 軸のラベルを設定
+# plt.xlabel('PC1')
+# plt.ylabel('PC2')
+# # 凡例を左下に表示
+# plt.legend(loc='lower left')
+# # プロットを表示
+# plt.tight_layout()
+# plt.show()
+
+# 分散説明率を確認
+# PCAインスタンスを生成
+pca = PCA(n_components=None)
+# PCAを実行し、データを変換
+X_train_pca = pca.fit_transform(X_train_std)
+# 分散説明率を計算
+print(pca.explained_variance_ratio_)
