@@ -4,6 +4,9 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 # 標準化を行うためにscikit-learnのpreprocessingモジュールからStandardScalerをインポート
 from sklearn.preprocessing import StandardScaler
+# 共分散行列の固有対を取得するためにnumpyをnpとしてインポート
+import numpy as np
+
 
 # Wineデータセットをインポートする
 df_wine = pd.read_csv('https://archive.ics.uci.edu/ml/'
@@ -18,3 +21,9 @@ sc = StandardScaler()
 X_train_std = sc.fit_transform(X_train)
 # テストデータの標準化
 X_test_std = sc.fit_transform(X_test)
+
+# 共分散行列を作成
+cov_mat = np.cov(X_train_std.T)
+# 固有値と固有ベクトルを計算
+eigen_vals, eigen_vecs = np.linalg.eig(cov_mat)
+print('\nEigenvalues \n%s' % eigen_vals)
