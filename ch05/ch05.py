@@ -220,22 +220,27 @@ eigen_pairs = sorted(eigen_pairs, key=lambda k: k[0], reverse=True)
 # for eigen_val in eigen_pairs:
 #     print(eigen_val[0])
 
-# クラスの判別情報を計測
-# 固有値の実数部の総和を求める
-tot = sum(eigen_vals.real)
-# 分散説明率とその累積和を計算
-discr = [(i / tot) for i in sorted(eigen_vals.real, reverse=True)]
-cum_discr = np.cumsum(discr)
-# 棒グラフと階段グラフを描画
-plt.bar(range(1, 14), discr, alpha=0.5, align='center', label='Individual "discriminability"')
-plt.step(range(1, 14), cum_discr, where='mid', label='Cumulative "discriminability"')
-# 軸のラベルを設定
-plt.ylabel('"Discriminability" ratio')
-plt.xlabel('Linear Discriminants')
-# y軸の上限、下限を設定
-plt.ylim([-0.1, 1.1])
-# 凡例を適切な位置に表示
-plt.legend(loc='best')
-# プロットを表示
-plt.tight_layout()
-plt.show()
+# # クラスの判別情報を計測
+# # 固有値の実数部の総和を求める
+# tot = sum(eigen_vals.real)
+# # 分散説明率とその累積和を計算
+# discr = [(i / tot) for i in sorted(eigen_vals.real, reverse=True)]
+# cum_discr = np.cumsum(discr)
+# # 棒グラフと階段グラフを描画
+# plt.bar(range(1, 14), discr, alpha=0.5, align='center', label='Individual "discriminability"')
+# plt.step(range(1, 14), cum_discr, where='mid', label='Cumulative "discriminability"')
+# # 軸のラベルを設定
+# plt.ylabel('"Discriminability" ratio')
+# plt.xlabel('Linear Discriminants')
+# # y軸の上限、下限を設定
+# plt.ylim([-0.1, 1.1])
+# # 凡例を適切な位置に表示
+# plt.legend(loc='best')
+# # プロットを表示
+# plt.tight_layout()
+# plt.show()
+
+# 変換行列を作成
+# 2つの固有ベクトルから変換行列を作成
+w = np.hstack((eigen_pairs[0][1][:, np.newaxis].real, eigen_pairs[1][1][:, np.newaxis].real))
+print('Matrix W:\n', w)
