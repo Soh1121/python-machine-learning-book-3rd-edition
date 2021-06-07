@@ -150,10 +150,19 @@ lr.fit(X_train_pca, y_train)
 # plt.tight_layout()
 # plt.show()
 
-# 分散説明率を確認
-# PCAインスタンスを生成
-pca = PCA(n_components=None)
-# PCAを実行し、データを変換
-X_train_pca = pca.fit_transform(X_train_std)
-# 分散説明率を計算
-print(pca.explained_variance_ratio_)
+# # 分散説明率を確認
+# # PCAインスタンスを生成
+# pca = PCA(n_components=None)
+# # PCAを実行し、データを変換
+# X_train_pca = pca.fit_transform(X_train_std)
+# # 分散説明率を計算
+# print(pca.explained_variance_ratio_)
+
+# 平均ベクトルを生成する
+# 浮動小数ん点数の小数点以下の表示桁数を設定
+np.set_printoptions(precision=4)
+# 平均ベクトルを生成
+mean_vecs = []
+for label in range(1, 4):
+    mean_vecs.append(np.mean(X_train_std[y_train == label], axis=0))
+    print('MV %s: %s\n' % (label, mean_vecs[label - 1]))
