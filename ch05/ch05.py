@@ -178,4 +178,7 @@ for label, mv in zip(range(1, 4), mean_vecs):
         row, mv = row.reshape(d, 1), mv.reshape(d, 1)
         class_scatter += (row - mv).dot((row - mv).T)
     S_W += class_scatter
-print('Within-class scatter matrix: %sx%s' % (S_W.shape[0], S_W.shape[1]))
+# print('Within-class scatter matrix: %sx%s' % (S_W.shape[0], S_W.shape[1]))
+
+# クラスラベルが一様に分布しているか確認
+print('Class label distribution: %s' % np.bincount(y_train)[1:])
