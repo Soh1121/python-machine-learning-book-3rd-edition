@@ -181,4 +181,14 @@ for label, mv in zip(range(1, 4), mean_vecs):
 # print('Within-class scatter matrix: %sx%s' % (S_W.shape[0], S_W.shape[1]))
 
 # クラスラベルが一様に分布しているか確認
-print('Class label distribution: %s' % np.bincount(y_train)[1:])
+# print('Class label distribution: %s' % np.bincount(y_train)[1:])
+
+# スケーリングされたクラス内変動行列を計算
+# 特徴量の個数
+d = 13
+# スケーリングしたクラス内変動行列を計算
+S_W = np.zeros((d, d))
+for label, mv in zip(range(1, 4), mean_vecs):
+    class_scatter = np.cov(X_train_std[y_train == label].T)
+    S_W += class_scatter
+print('Scaled within-class scatter matrix: %sx%s' % (S_W.shape[0], S_W.shape[1]))
