@@ -210,3 +210,12 @@ for i, mean_vec in enumerate(mean_vecs):
 
 # 固有値を計算
 eigen_vals, eigen_vecs = np.linalg.eig(np.linalg.inv(S_W).dot(S_B))
+
+# 固有値を大きいものから降順で並び替える
+# 固有値対を計算
+eigen_pairs = [(np.abs(eigen_vals[i]), eigen_vecs[:, i]) for i in range(len(eigen_vals))]
+# 固有値を降順でソート
+eigen_pairs = sorted(eigen_pairs, key=lambda k: k[0], reverse=True)
+print('Eigenvalues in descending order:\n')
+for eigen_val in eigen_pairs:
+    print(eigen_val[0])
