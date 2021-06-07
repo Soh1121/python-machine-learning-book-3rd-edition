@@ -191,4 +191,19 @@ S_W = np.zeros((d, d))
 for label, mv in zip(range(1, 4), mean_vecs):
     class_scatter = np.cov(X_train_std[y_train == label].T)
     S_W += class_scatter
-print('Scaled within-class scatter matrix: %sx%s' % (S_W.shape[0], S_W.shape[1]))
+# print('Scaled within-class scatter matrix: %sx%s' % (S_W.shape[0], S_W.shape[1]))
+
+# クラス間変動S_Bの算出
+# すべてのデータ点を対象とした全体平均を算出
+mean_overall = np.mean(X_train_std, axis=0)
+# 特徴量の個数を設定
+d = 13
+# クラス間変動S_Bを算出
+S_B = np.zeros((d, d))
+for i, mean_vec in enumerate(mean_vecs):
+    n = X_train_std[y_train == i + 1, :].shape[0]
+    # 列ベクトルを生成
+    mean_vec = mean_vec.reshape(d, 1)
+    mean_overall = mean_overall.reshape(d, 1)
+    S_B += n * (mean_vec - mean_overall).dot((mean_vec - mean_overall).T)
+print('Between-class scatter matrix: %sx%s' % (S_B.shape[0], S_B.shape[1]))
