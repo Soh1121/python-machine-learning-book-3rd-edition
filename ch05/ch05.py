@@ -206,4 +206,7 @@ for i, mean_vec in enumerate(mean_vecs):
     mean_vec = mean_vec.reshape(d, 1)
     mean_overall = mean_overall.reshape(d, 1)
     S_B += n * (mean_vec - mean_overall).dot((mean_vec - mean_overall).T)
-print('Between-class scatter matrix: %sx%s' % (S_B.shape[0], S_B.shape[1]))
+# print('Between-class scatter matrix: %sx%s' % (S_B.shape[0], S_B.shape[1]))
+
+# 固有値を計算
+eigen_vals, eigen_vecs = np.linalg.eig(np.linalg.inv(S_W).dot(S_B))
