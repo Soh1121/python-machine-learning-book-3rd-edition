@@ -165,4 +165,17 @@ np.set_printoptions(precision=4)
 mean_vecs = []
 for label in range(1, 4):
     mean_vecs.append(np.mean(X_train_std[y_train == label], axis=0))
-    print('MV %s: %s\n' % (label, mean_vecs[label - 1]))
+    # print('MV %s: %s\n' % (label, mean_vecs[label - 1]))
+
+# クラス内変動行列の生成
+# 特徴量の個数
+d = 13
+# S_Wを算出
+S_W = np.zeros((d, d))
+for label, mv in zip(range(1, 4), mean_vecs):
+    class_scatter = np.zeros((d, d))
+    for row in X_train_std[y_train == label]:
+        row, mv = row.reshape(d, 1), mv.reshape(d, 1)
+        class_scatter += (row - mv).dot((row - mv).T)
+    S_W += class_scatter
+print('Within-class scatter matrix: %sx%s' % (S_W.shape[0], S_W.shape[1]))
