@@ -289,13 +289,66 @@ lr = lr.fit(X_train_lda, y_train)
 # テストデータでの結果を確認
 # テストデータをLDAに適用
 X_test_lda = lda.transform(X_test_std)
-# 決定境界を描画
-plot_decision_regions(X_test_lda, y_test, classifier=lr)
-# 軸のラベルを設定
-plt.xlabel('LD 1')
-plt.ylabel('LD 2')
-# 凡例を左下に表示
-plt.legend(loc='lower left')
-# プロットを表示
-plt.tight_layout()
-plt.show()
+# # 決定境界を描画
+# plot_decision_regions(X_test_lda, y_test, classifier=lr)
+# # 軸のラベルを設定
+# plt.xlabel('LD 1')
+# plt.ylabel('LD 2')
+# # 凡例を左下に表示
+# plt.legend(loc='lower left')
+# # プロットを表示
+# plt.tight_layout()
+# plt.show()
+
+# カーネル主成分分析を実装
+# ユークリッド距離の2乗の計算のため、scipyのspatialモジュールのdistanceクラスからpdist関数をインポート
+# ペアごとの距離を正方行列に変換するため、scipyのspatialモジュールのdistanceクラスからsquareform関数をインポート
+from scipy.spatial.distance import pdist, squareform
+# 指数関数を計算するためにscipyからexpをインポート
+from scipy import exp
+# 中心化されたカーネル行列から固有値対を取得するため、scipyのlinalgモジュールからeigh関数をインポート
+from scipy.linalg import eigh
+
+
+def rbf_kernel_pca(X, gamma, n_components):
+    """RBFカーネルPCAの実装
+    パラメータ
+    ------------
+    X: {Numpy ndarray}, shape = [n_examples, n_features]
+
+    gamma: float
+        RBFカーネルのチューニングパラメータ
+
+    n_components: int
+        返される主成分の個数
+
+    戻り値
+    ------------
+    X_pc: {Numpy ndarray}, shape = [n_examples, k_features]
+        射影されたデータセット
+    """
+
+    # M x N 次元のデータセットでペアごとのユークリッド距離の2乗を計算
+    sq_dists = pdist(X, 'sqeuclidean')
+
+    # ペアごとの距離を正方行列に変換
+    mat_sq_dists = squareform(sq_dists)
+
+    # 対称カーネル行列を計算
+    K = exp(-gamma * mat_sq_dists)
+
+    # カーネル行列を中心化
+    N = K.shape[0]
+    one_n = np.ones((N, N)) / N
+    K = K - one_n.dot(K) - K.dot(one_n) + one_n.dot(K).dot(one_n)
+
+    # 中心化されたカーネル行列から固有値対を取得
+    eigvals, eigvecs = eigh(K)
+    eigvals, eigvecs = eigvals[::-1], eigvecs[:, ::-1]
+
+    # 上位k個の固有ベクトル（射影されたデータ点）を収集
+    X_pc = np.column_stack((eigvecs[:, i] for i in range(n_components)))
+
+    return X_pc
+
+
