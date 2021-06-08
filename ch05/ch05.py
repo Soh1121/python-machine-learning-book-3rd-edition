@@ -8,6 +8,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 # ロジスティック回帰を行うため、scikit-learnのlinear_modelモジュールからLogisticRegressionをインポート
 from sklearn.linear_model import LogisticRegression
+# LDAを用いるためにscikit-learnのdisxriminant_analysisモジュールからLinearDiscriminantAnalysisをLDAとしてインポート
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 # 共分散行列の固有対を取得するためにnumpyをnpとしてインポート
 import numpy as np
 # グラフをプロットするためにmatplotlibからpyplotモジュールをpltとしてインポート
@@ -240,25 +242,30 @@ eigen_pairs = sorted(eigen_pairs, key=lambda k: k[0], reverse=True)
 # plt.tight_layout()
 # plt.show()
 
-# 変換行列を作成
-# 2つの固有ベクトルから変換行列を作成
-w = np.hstack((eigen_pairs[0][1][:, np.newaxis].real, eigen_pairs[1][1][:, np.newaxis].real))
-# print('Matrix W:\n', w)
+# # 変換行列を作成
+# # 2つの固有ベクトルから変換行列を作成
+# w = np.hstack((eigen_pairs[0][1][:, np.newaxis].real, eigen_pairs[1][1][:, np.newaxis].real))
+# # print('Matrix W:\n', w)
 
-# 新しい特徴量空間にデータ点を射影する
-# 標準化した訓練データに変換行列をかける
-X_train_lda = X_train_std.dot(w)
-# プロット用の設定
-colors = ['r', 'b', 'g']
-markers = ['s', 'x', 'o']
-# 変換後のデータを散布図にプロット
-for l, c, m in zip(np.unique(y_train), colors, markers):
-    plt.scatter(X_train_lda[y_train == l, 0], X_train_lda[y_train == l, 1] * (-1), c=c, label=l, marker=m)
-# 軸のラベルを設定
-plt.xlabel('LD 1')
-plt.ylabel('LD 2')
-# 凡例を右下に表示
-plt.legend(loc='lower right')
-# プロットを表示
-plt.tight_layout()
-plt.show()
+# # 新しい特徴量空間にデータ点を射影する
+# # 標準化した訓練データに変換行列をかける
+# X_train_lda = X_train_std.dot(w)
+# # プロット用の設定
+# colors = ['r', 'b', 'g']
+# markers = ['s', 'x', 'o']
+# # 変換後のデータを散布図にプロット
+# for l, c, m in zip(np.unique(y_train), colors, markers):
+#     plt.scatter(X_train_lda[y_train == l, 0], X_train_lda[y_train == l, 1] * (-1), c=c, label=l, marker=m)
+# # 軸のラベルを設定
+# plt.xlabel('LD 1')
+# plt.ylabel('LD 2')
+# # 凡例を右下に表示
+# plt.legend(loc='lower right')
+# # プロットを表示
+# plt.tight_layout()
+# plt.show()
+
+# scikit-learnによる線形判別分析
+# 次元数を指定して、LDAのインスタンスを生成
+lda = LDA(n_components=2)
+X_train_lda = lda.fit_transform(X_train_std, y_train)
