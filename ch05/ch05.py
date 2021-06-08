@@ -269,3 +269,19 @@ eigen_pairs = sorted(eigen_pairs, key=lambda k: k[0], reverse=True)
 # 次元数を指定して、LDAのインスタンスを生成
 lda = LDA(n_components=2)
 X_train_lda = lda.fit_transform(X_train_std, y_train)
+
+# ロジスティック回帰を実行
+# ロジスティック回帰のインスタンスを生成
+lr = LogisticRegression(multi_class='ovr', random_state=1, solver='lbfgs')
+# ロジスティック回帰をLDAを適用した訓練データで学習
+lr = lr.fit(X_train_lda, y_train)
+# 決定境界を描画
+plot_decision_regions(X_train_lda, y_train, classifier=lr)
+# 軸のラベルを設定
+plt.xlabel('LD 1')
+plt.ylabel('LD 2')
+# 凡例を左下に表示
+plt.legend(loc='lower left')
+# プロットを表示
+plt.tight_layout()
+plt.show()
