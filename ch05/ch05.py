@@ -433,14 +433,38 @@ X, y = make_circles(n_samples=1000, random_state=123, noise=0.1, factor=0.2)
 scikit_pca = PCA(n_components=2)
 # XにPCAを適用
 X_spca = scikit_pca.fit_transform(X)
+# # グラフの数と配置、サイズを指定
+# fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(7, 3))
+# # 第1主成分と第2主成分の散布図を作成
+# ax[0].scatter(X_spca[y == 0, 0], X_spca[y == 0, 1], color='red', marker='^', alpha=0.5)
+# ax[0].scatter(X_spca[y == 1, 0], X_spca[y == 1, 1], color='blue', marker='o', alpha=0.5)
+# # 1次元の特徴量軸に射影したときの散布図を作成
+# ax[1].scatter(X_spca[y == 0, 0], np.zeros((500, 1)) + 0.02, color='red', marker='^', alpha=0.5)
+# ax[1].scatter(X_spca[y == 1, 0], np.zeros((500, 1)) - 0.02, color='blue', marker='o', alpha=0.5)
+# # カーネルPCAの結果をプロットした軸のラベルを設定
+# ax[0].set_xlabel('PC 1')
+# ax[0].set_ylabel('PC 2')
+# # 1次元の特徴量軸に射影したときのy軸の上限・下限を設定
+# ax[1].set_ylim([-1, 1])
+# # 1次元の特徴両軸に射影したときの目盛りを空に設定
+# ax[1].set_yticks([])
+# # 1次元の特徴両軸に射影したときのx軸のラベルを設定
+# ax[1].set_xlabel('PC 1')
+# # プロットを表示
+# plt.tight_layout()
+# plt.show()
+
+# カーネルPCAを試行
+# データをRBFカーネルPCAで変換してからプロット
+X_kpca = rbf_kernel_pca(X, gamma=15, n_components=2)
 # グラフの数と配置、サイズを指定
 fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(7, 3))
 # 第1主成分と第2主成分の散布図を作成
-ax[0].scatter(X_spca[y == 0, 0], X_spca[y == 0, 1], color='red', marker='^', alpha=0.5)
-ax[0].scatter(X_spca[y == 1, 0], X_spca[y == 1, 1], color='blue', marker='o', alpha=0.5)
+ax[0].scatter(X_kpca[y == 0, 0], X_kpca[y == 0, 1], color='red', marker='^', alpha=0.5)
+ax[0].scatter(X_kpca[y == 1, 0], X_kpca[y == 1, 1], color='blue', marker='o', alpha=0.5)
 # 1次元の特徴量軸に射影したときの散布図を作成
-ax[1].scatter(X_spca[y == 0, 0], np.zeros((500, 1)) + 0.02, color='red', marker='^', alpha=0.5)
-ax[1].scatter(X_spca[y == 1, 0], np.zeros((500, 1)) - 0.02, color='blue', marker='o', alpha=0.5)
+ax[1].scatter(X_kpca[y == 0, 0], np.zeros((500, 1)) + 0.02, color='red', marker='^', alpha=0.5)
+ax[1].scatter(X_kpca[y == 1, 0], np.zeros((500, 1)) - 0.02, color='blue', marker='o', alpha=0.5)
 # カーネルPCAの結果をプロットした軸のラベルを設定
 ax[0].set_xlabel('PC 1')
 ax[0].set_ylabel('PC 2')
