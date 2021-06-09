@@ -357,12 +357,12 @@ def rbf_kernel_pca(X, gamma, n_components):
     return alphas, lambdas
 
 
-# 半月型の分離を試行
-# 2つの半月形データを作成してプロット
-# 半月形データを作成するため、scikit-learnのdatasetsモジュールからmake_moonsをインポート
+# # 半月型の分離を試行
+# # 2つの半月形データを作成してプロット
+# # 半月形データを作成するため、scikit-learnのdatasetsモジュールからmake_moonsをインポート
 from sklearn.datasets import make_moons
-# データセットを作成
-X, y = make_moons(n_samples=100, random_state=123)
+# # データセットを作成
+# X, y = make_moons(n_samples=100, random_state=123)
 # # 作成したデータセットの散布図をプロット
 # plt.scatter(X[y == 0, 0], X[y == 0, 1], color='red', marker='^', alpha=0.5)
 # plt.scatter(X[y == 1, 0], X[y == 1, 1], color='blue', marker='o', alpha=0.5)
@@ -371,10 +371,10 @@ X, y = make_moons(n_samples=100, random_state=123)
 # plt.show()
 
 # # 標準のPCAを用いて主成分に投影したらどうなるか
-# PCAのインスタンスを生成
-scikit_pca = PCA(n_components=2)
-# PCAを学習しXに適用
-X_spca = scikit_pca.fit_transform(X)
+# # PCAのインスタンスを生成
+# scikit_pca = PCA(n_components=2)
+# # PCAを学習しXに適用
+# X_spca = scikit_pca.fit_transform(X)
 # # グラフの数と配置、サイズを指定
 # fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(7, 3))
 # # 1番目のグラフ領域に散布図をプロット
@@ -396,9 +396,9 @@ X_spca = scikit_pca.fit_transform(X)
 # plt.tight_layout()
 # plt.show()
 
-# カーネルPCA関数を試行
-# データ、チューニングパラメータ、次元数を指定してカーネル関数を実行
-X_kpca = rbf_kernel_pca(X, gamma=15, n_components=2)
+# # カーネルPCA関数を試行
+# # データ、チューニングパラメータ、次元数を指定してカーネル関数を実行
+# X_kpca = rbf_kernel_pca(X, gamma=15, n_components=2)
 # グラフの数と配置、サイズを指定
 # fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(7, 3))
 # # 第1主成分と第2主成分の散布図を作成
@@ -420,11 +420,11 @@ X_kpca = rbf_kernel_pca(X, gamma=15, n_components=2)
 # plt.tight_layout()
 # plt.show()
 
-# 同心円用のデータセットを作成
-# 同心円用のデータを作成するため、scikit-learnのdatasetsモジュールからmake_circlesをインポート
+# # 同心円用のデータセットを作成
+# # 同心円用のデータを作成するため、scikit-learnのdatasetsモジュールからmake_circlesをインポート
 from sklearn.datasets import make_circles
-# データセットを作成
-X, y = make_circles(n_samples=1000, random_state=123, noise=0.1, factor=0.2)
+# # データセットを作成
+# X, y = make_circles(n_samples=1000, random_state=123, noise=0.1, factor=0.2)
 # # 散布図の作成
 # plt.scatter(X[y == 0, 0], X[y == 0, 1], color='red', marker='^', alpha=0.5)
 # plt.scatter(X[y == 1, 0], X[y == 1, 1], color='blue', marker='o', alpha=0.5)
@@ -432,12 +432,12 @@ X, y = make_circles(n_samples=1000, random_state=123, noise=0.1, factor=0.2)
 # plt.tight_layout()
 # plt.show()
 
-# 標準のPCAの結果を確認
-# データをPCAで変換してからプロット
-# pcaインスタンスの作成
-scikit_pca = PCA(n_components=2)
-# XにPCAを適用
-X_spca = scikit_pca.fit_transform(X)
+# # 標準のPCAの結果を確認
+# # データをPCAで変換してからプロット
+# # pcaインスタンスの作成
+# scikit_pca = PCA(n_components=2)
+# # XにPCAを適用
+# X_spca = scikit_pca.fit_transform(X)
 # # グラフの数と配置、サイズを指定
 # fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(7, 3))
 # # 第1主成分と第2主成分の散布図を作成
@@ -459,26 +459,32 @@ X_spca = scikit_pca.fit_transform(X)
 # plt.tight_layout()
 # plt.show()
 
-# カーネルPCAを試行
-# データをRBFカーネルPCAで変換してからプロット
-X_kpca = rbf_kernel_pca(X, gamma=15, n_components=2)
-# グラフの数と配置、サイズを指定
-fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(7, 3))
-# 第1主成分と第2主成分の散布図を作成
-ax[0].scatter(X_kpca[y == 0, 0], X_kpca[y == 0, 1], color='red', marker='^', alpha=0.5)
-ax[0].scatter(X_kpca[y == 1, 0], X_kpca[y == 1, 1], color='blue', marker='o', alpha=0.5)
-# 1次元の特徴量軸に射影したときの散布図を作成
-ax[1].scatter(X_kpca[y == 0, 0], np.zeros((500, 1)) + 0.02, color='red', marker='^', alpha=0.5)
-ax[1].scatter(X_kpca[y == 1, 0], np.zeros((500, 1)) - 0.02, color='blue', marker='o', alpha=0.5)
-# カーネルPCAの結果をプロットした軸のラベルを設定
-ax[0].set_xlabel('PC 1')
-ax[0].set_ylabel('PC 2')
-# 1次元の特徴量軸に射影したときのy軸の上限・下限を設定
-ax[1].set_ylim([-1, 1])
-# 1次元の特徴両軸に射影したときの目盛りを空に設定
-ax[1].set_yticks([])
-# 1次元の特徴両軸に射影したときのx軸のラベルを設定
-ax[1].set_xlabel('PC 1')
-# プロットを表示
-plt.tight_layout()
-plt.show()
+# # カーネルPCAを試行
+# # データをRBFカーネルPCAで変換してからプロット
+# X_kpca = rbf_kernel_pca(X, gamma=15, n_components=2)
+# # グラフの数と配置、サイズを指定
+# fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(7, 3))
+# # 第1主成分と第2主成分の散布図を作成
+# ax[0].scatter(X_kpca[y == 0, 0], X_kpca[y == 0, 1], color='red', marker='^', alpha=0.5)
+# ax[0].scatter(X_kpca[y == 1, 0], X_kpca[y == 1, 1], color='blue', marker='o', alpha=0.5)
+# # 1次元の特徴量軸に射影したときの散布図を作成
+# ax[1].scatter(X_kpca[y == 0, 0], np.zeros((500, 1)) + 0.02, color='red', marker='^', alpha=0.5)
+# ax[1].scatter(X_kpca[y == 1, 0], np.zeros((500, 1)) - 0.02, color='blue', marker='o', alpha=0.5)
+# # カーネルPCAの結果をプロットした軸のラベルを設定
+# ax[0].set_xlabel('PC 1')
+# ax[0].set_ylabel('PC 2')
+# # 1次元の特徴量軸に射影したときのy軸の上限・下限を設定
+# ax[1].set_ylim([-1, 1])
+# # 1次元の特徴両軸に射影したときの目盛りを空に設定
+# ax[1].set_yticks([])
+# # 1次元の特徴両軸に射影したときのx軸のラベルを設定
+# ax[1].set_xlabel('PC 1')
+# # プロットを表示
+# plt.tight_layout()
+# plt.show()
+
+# 新しい半月形データセットを作成し、RBFカーネルPCAの新しい実装を使って1次元の部分空間に射影
+# データセットを作成
+X, y = make_moons(n_samples=100, random_state=123)
+# RDFカーネルPCAを適用
+alphas, lambdas = rbf_kernel_pca(X, gamma=15, n_components=1)
