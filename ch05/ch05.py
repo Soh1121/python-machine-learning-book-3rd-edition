@@ -488,3 +488,16 @@ from sklearn.datasets import make_circles
 X, y = make_moons(n_samples=100, random_state=123)
 # RDFカーネルPCAを適用
 alphas, lambdas = rbf_kernel_pca(X, gamma=15, n_components=1)
+# テストデータに含まれるデータを試しに射影してみる
+x_new = X[25]
+print(x_new)
+# 元の射影を確認
+x_proj = alphas[25]
+print(x_proj)
+
+
+# 新しいデータ点を射影する関数を作成
+def project_x(x_new, X, gamma, alphas, lambdas):
+    pair_dist = np.array([np.sum((x_new - row) ** 2) for row in X])
+    k = np.exp(-gamma * pair_dist)
+    return k.dot(alphas / lambdas)
