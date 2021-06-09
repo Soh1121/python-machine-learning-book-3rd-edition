@@ -483,17 +483,17 @@ from sklearn.datasets import make_circles
 # plt.tight_layout()
 # plt.show()
 
-# 新しい半月形データセットを作成し、RBFカーネルPCAの新しい実装を使って1次元の部分空間に射影
-# データセットを作成
-X, y = make_moons(n_samples=100, random_state=123)
-# RDFカーネルPCAを適用
-alphas, lambdas = rbf_kernel_pca(X, gamma=15, n_components=1)
-# テストデータに含まれるデータを試しに射影してみる
-x_new = X[25]
-print(x_new)
-# 元の射影を確認
-x_proj = alphas[25]
-print(x_proj)
+# # 新しい半月形データセットを作成し、RBFカーネルPCAの新しい実装を使って1次元の部分空間に射影
+# # データセットを作成
+# X, y = make_moons(n_samples=100, random_state=123)
+# # RDFカーネルPCAを適用
+# alphas, lambdas = rbf_kernel_pca(X, gamma=15, n_components=1)
+# # テストデータに含まれるデータを試しに射影してみる
+# x_new = X[25]
+# print(x_new)
+# # 元の射影を確認
+# x_proj = alphas[25]
+# print(x_proj)
 
 
 # 新しいデータ点を射影する関数を作成
@@ -503,18 +503,26 @@ def project_x(x_new, X, gamma, alphas, lambdas):
     return k.dot(alphas / lambdas)
 
 
-x_reproj = project_x(x_new, X, gamma=15, alphas=alphas, lambdas=lambdas)
-print(x_reproj)
+# x_reproj = project_x(x_new, X, gamma=15, alphas=alphas, lambdas=lambdas)
+# print(x_reproj)
 
-# 最初の主成分への射影をプロット
-plt.scatter(alphas[y == 0, 0], np.zeros((50)), color='red', marker='^', alpha=0.5)
-plt.scatter(alphas[y == 1, 0], np.zeros((50)), color='blue', marker='o', alpha=0.5)
-plt.scatter(x_proj, 0, color='black', label='Original projection of point X[25]', marker='^', s=100)
-plt.scatter(x_reproj, 0, color='green', label='Remapped point X[25]', marker='x', s=500)
-# 目盛りを削除
-plt.yticks([], [])
-# 凡例を右上に表示
-plt.legend(scatterpoints=1)
-# プロットを表示
-plt.tight_layout()
-plt.show()
+# # 最初の主成分への射影をプロット
+# plt.scatter(alphas[y == 0, 0], np.zeros((50)), color='red', marker='^', alpha=0.5)
+# plt.scatter(alphas[y == 1, 0], np.zeros((50)), color='blue', marker='o', alpha=0.5)
+# plt.scatter(x_proj, 0, color='black', label='Original projection of point X[25]', marker='^', s=100)
+# plt.scatter(x_reproj, 0, color='green', label='Remapped point X[25]', marker='x', s=500)
+# # 目盛りを削除
+# plt.yticks([], [])
+# # 凡例を右上に表示
+# plt.legend(scatterpoints=1)
+# # プロットを表示
+# plt.tight_layout()
+# plt.show()
+
+# scikit-learnのカーネル主成分分析を試行
+# カーネルPCAを行うため、scikit-learnのdecompositionモジュールからKernelPCAをインポート
+from sklearn.decomposition import KernelPCA
+# 半月形データセットを作成
+X, y = make_moons(n_samples=100, random_state=123)
+scikit_kpca = KernelPCA(n_components=2, kernel='rbf', gamma=15)
+X_skernpca = scikit_kpca.fit_transform(X)
