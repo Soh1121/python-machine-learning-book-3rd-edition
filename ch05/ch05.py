@@ -526,3 +526,13 @@ from sklearn.decomposition import KernelPCA
 X, y = make_moons(n_samples=100, random_state=123)
 scikit_kpca = KernelPCA(n_components=2, kernel='rbf', gamma=15)
 X_skernpca = scikit_kpca.fit_transform(X)
+
+# 最初の2つの主成分に変換された半月形データをプロット
+plt.scatter(X_skernpca[y == 0, 0], X_skernpca[y == 0, 1], color='red', marker='^', alpha=0.5)
+plt.scatter(X_skernpca[y == 1, 0], X_skernpca[y == 1, 1], color='blue', marker='o', alpha=0.5)
+# 軸のラベルを設定
+plt.xlabel('PC 1')
+plt.ylabel('PC 2')
+# プロットを表示
+plt.tight_layout()
+plt.show()
