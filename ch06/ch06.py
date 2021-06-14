@@ -16,8 +16,10 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold
 # 交差検証の正解率を算出するため、scikit-learnのmodel_selectionモジュールからcross_val_scoreをインポート
 from sklearn.model_selection import cross_val_score
-# 交差検証を実行するため、scikit-learnのmodel_selectionモジュールからlearning_curve関数をインポート
+# 学習曲線を作成するため、scikit-learnのmodel_selectionモジュールからlearning_curve関数をインポート
 from sklearn.model_selection import learning_curve
+# 検証曲線を作成するため、scikit-learnのmodel_selectionモジュールからvalidation_curve関数をインポート
+from sklearn.model_selection import validation_curve
 # 要素数をカウントするためなどにnumpyをnpとしてインポート
 import numpy as np
 # プロットを作成するためにmatplotlibのpyplotモジュールをpltとしてインポート
@@ -79,36 +81,71 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, strati
 # print('CV accuracy scores: %s' % scores)
 # print('CV accuracy: %.3f +/- %.3f' % (np.mean(scores), np.std(scores)))
 
-# scikit-learnの学習曲線関数を使ってモデルを評価
-# 標準化をしてロジスティック回帰を行うパイプラインを作成
+# # scikit-learnの学習曲線関数を使ってモデルを評価
+# # 標準化をしてロジスティック回帰を行うパイプラインを作成
 pipe_lr = make_pipeline(StandardScaler(),
                         LogisticRegression(penalty='l2', random_state=1,
                         solver='lbfgs', max_iter=10000))
-# learning_curve関数で交差検証による正解率を算出
-train_sizes, train_scores, test_scores = learning_curve(estimator=pipe_lr, X=X_train, y=y_train, train_sizes=np.linspace(0.1, 1.0, 10),
-                                                        cv=10, n_jobs=1)
-# 訓練データとテトスデータの平均と標準偏差を算出
+# # learning_curve関数で交差検証による正解率を算出
+# train_sizes, train_scores, test_scores = learning_curve(estimator=pipe_lr, X=X_train, y=y_train, train_sizes=np.linspace(0.1, 1.0, 10),
+#                                                         cv=10, n_jobs=1)
+# # 訓練データとテトスデータの平均と標準偏差を算出
+# train_mean = np.mean(train_scores, axis=1)
+# train_std = np.std(train_scores, axis=1)
+# test_mean = np.mean(test_scores, axis=1)
+# test_std = np.std(test_scores, axis=1)
+# # 訓練データにおける正解率をプロット
+# plt.plot(train_sizes, train_mean, color='blue', marker='o', markersize=5, label='Training accuracy')
+# # fill_between関数で平均±標準偏差の幅を塗りつぶす
+# plt.fill_between(train_sizes, train_mean + train_std, train_mean - train_std, alpha=0.5, color='blue')
+# # テストデータにおける正解率をプロット
+# plt.plot(train_sizes, test_mean, color='green', linestyle='--', marker='s', markersize=5, label='Validation accuracy')
+# # fill_between関数で平均±標準偏差の幅を塗りつぶす
+# plt.fill_between(train_sizes, test_mean + test_std, test_mean - test_std, alpha=0.5, color='green')
+# # 目盛りを表示
+# plt.grid()
+# # 軸のラベルを設定
+# plt.xlabel('Number of training examples')
+# plt.ylabel('Accuracy')
+# # 凡例を右下に表示
+# plt.legend(loc='lower right')
+# # y軸の上限、下限を設定
+# plt.ylim([0.8, 1.03])
+# # プロットを表示
+# plt.tight_layout()
+# plt.show()
+
+# 検証曲線を使ってモデルを評価
+# validation_curve関数によるモデルのパラメータを変化させ、交差検証による正解率を算出
+param_range = [0.001, 0.01, 0.1, 1.0, 10.0, 100.0]
+train_scores, test_scores = validation_curve(estimator=pipe_lr,
+                                             X=X_train, y=y_train,
+                                             param_name='logisticregression__C',
+                                             param_range=param_range, cv=10)
+# 平均と標準偏差を算出
 train_mean = np.mean(train_scores, axis=1)
 train_std = np.std(train_scores, axis=1)
 test_mean = np.mean(test_scores, axis=1)
 test_std = np.std(test_scores, axis=1)
-# 訓練データにおける正解率をプロット
-plt.plot(train_sizes, train_mean, color='blue', marker='o', markersize=5, label='Training accuracy')
-# fill_between関数で平均±標準偏差の幅を塗りつぶす
-plt.fill_between(train_sizes, train_mean + train_std, train_mean - train_std, alpha=0.5, color='blue')
-# テストデータにおける正解率をプロット
-plt.plot(train_sizes, test_mean, color='green', linestyle='--', marker='s', markersize=5, label='Validation accuracy')
-# fill_between関数で平均±標準偏差の幅を塗りつぶす
-plt.fill_between(train_sizes, test_mean + test_std, test_mean - test_std, alpha=0.5, color='green')
+# 訓練データにおける検証曲線をプロット
+plt.plot(param_range, train_mean, color='blue', marker='o', markersize=5, label='Training accuracy')
+# fill_between関数で平均±標準偏差を塗りつぶす
+plt.fill_between(param_range, train_mean + train_std, train_mean - train_std, alpha=0.5, color='blue')
+# テストデータにおける検証曲線をプロット
+plt.plot(param_range, test_mean, color='green', linestyle='--', marker='s', markersize=5, label='Validation accuracy')
+# fill_between関数で平均±標準偏差を塗りつぶす
+plt.fill_between(param_range, test_mean + test_std, test_mean - test_std, alpha=0.5, color='green')
 # 目盛りを表示
 plt.grid()
-# 軸のラベルを設定
-plt.xlabel('Number of training examples')
-plt.ylabel('Accuracy')
-# 凡例を右下に表示
+# X軸を対数スケールに
+plt.xscale('log')
+# 凡例を右下をに表示
 plt.legend(loc='lower right')
-# y軸の上限、下限を設定
-plt.ylim([0.8, 1.03])
+# 軸のラベルを表示
+plt.xlabel('Parameter C')
+plt.ylabel('Accuracy')
+# y軸の上限・下限を設定
+plt.ylim([0.8, 1.0])
 # プロットを表示
 plt.tight_layout()
 plt.show()
