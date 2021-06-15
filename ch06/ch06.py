@@ -162,21 +162,30 @@ param_range = [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]
 # グリッドサーチを行うパラメータを設定
 param_grid = [{'svc__C': param_range, 'svc__kernel': ['linear']},
               {'svc__C': param_range, 'svc__gamma': param_range, 'svc__kernel': ['rbf']}]
-# ハイパーパラメータ値のリストparam_gridaを指定し、グリッドサーチを行うGridSearchCVクラスをインスタンス化
+# # ハイパーパラメータ値のリストparam_gridaを指定し、グリッドサーチを行うGridSearchCVクラスをインスタンス化
+# gs = GridSearchCV(estimator=pipe_svc,
+#                   param_grid=param_grid,
+#                   scoring='accuracy', cv=10, refit=True, n_jobs=1)
+# # 訓練を実行
+# gs.fit(X_train, y_train)
+# # # モデルの最良スコアを出力
+# # print(gs.best_score_)
+# # # 最良スコアとなるパラメータ値を出力
+# # print(gs.best_params_)
+
+# # テストデータセットを用いて、選択されたモデルの性能を評価
+# # ベストなモデルの取得
+# clf = gs.best_estimator_
+# # 最良モデルでSVMを実行
+# # clf.fit(X_train, y_train)
+# # スコアを算出
+# print('Test accuracy: %.3f' % clf.score(X_test, y_test))
+
+# 入れ子式交差検証を実装
+# グリッドサーチでパラメータチューニング
 gs = GridSearchCV(estimator=pipe_svc,
                   param_grid=param_grid,
-                  scoring='accuracy', cv=10, refit=True, n_jobs=1)
-# 訓練を実行
-gs.fit(X_train, y_train)
-# # モデルの最良スコアを出力
-# print(gs.best_score_)
-# # 最良スコアとなるパラメータ値を出力
-# print(gs.best_params_)
-
-# テストデータセットを用いて、選択されたモデルの性能を評価
-# ベストなモデルの取得
-clf = gs.best_estimator_
-# 最良モデルでSVMを実行
-# clf.fit(X_train, y_train)
-# スコアを算出
-print('Test accuracy: %.3f' % clf.score(X_test, y_test))
+                  scoring='accuracy', cv=2)
+# 交差検証でスコアを算出
+scores = cross_val_score(gs, X_train, y_train, scoring='accuracy', cv=5)
+print('CV accuracy: %.3f +/- %.3f' % (np.mean(scores), np.std(scores)))
