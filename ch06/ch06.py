@@ -24,6 +24,8 @@ from sklearn.model_selection import validation_curve
 from sklearn.svm import SVC
 # グリッドサーチを行うため、scikit-learnのmodel_selectionモジュールからGridSearchCVをインポート
 from sklearn.model_selection import GridSearchCV
+# 決定木を用いるためにscikit-learnのtreeモジュールからDecisionTreeClassifierをインポート
+from sklearn.tree import DecisionTreeClassifier
 # 要素数をカウントするためなどにnumpyをnpとしてインポート
 import numpy as np
 # プロットを作成するためにmatplotlibのpyplotモジュールをpltとしてインポート
@@ -183,9 +185,19 @@ param_grid = [{'svc__C': param_range, 'svc__kernel': ['linear']},
 
 # 入れ子式交差検証を実装
 # グリッドサーチでパラメータチューニング
-gs = GridSearchCV(estimator=pipe_svc,
-                  param_grid=param_grid,
-                  scoring='accuracy', cv=2)
+# gs = GridSearchCV(estimator=pipe_svc,
+#                   param_grid=param_grid,
+#                   scoring='accuracy', cv=2)
 # 交差検証でスコアを算出
+# scores = cross_val_score(gs, X_train, y_train, scoring='accuracy', cv=5)
+# print('CV accuracy: %.3f +/- %.3f' % (np.mean(scores), np.std(scores)))
+
+# 決定木で深さパラメータのみチューニング
+# ハイパーパラメータ値として決定木の深さパラメータを指定し、
+# グリッドサーチを行うGridSearchCVクラスをインスタンス化
+gs = GridSearchCV(estimator=DecisionTreeClassifier(random_state=0),
+                  param_grid=[{'max_depth': [1, 2, 3, 4, 5, 6, 7, None]}],
+                  scoring='accuracy', cv=2)
+# 性能を確認
 scores = cross_val_score(gs, X_train, y_train, scoring='accuracy', cv=5)
 print('CV accuracy: %.3f +/- %.3f' % (np.mean(scores), np.std(scores)))
