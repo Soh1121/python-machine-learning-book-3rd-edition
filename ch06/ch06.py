@@ -168,7 +168,15 @@ gs = GridSearchCV(estimator=pipe_svc,
                   scoring='accuracy', cv=10, refit=True, n_jobs=1)
 # 訓練を実行
 gs.fit(X_train, y_train)
-# モデルの最良スコアを出力
-print(gs.best_score_)
-# 最良スコアとなるパラメータ値を出力
-print(gs.best_params_)
+# # モデルの最良スコアを出力
+# print(gs.best_score_)
+# # 最良スコアとなるパラメータ値を出力
+# print(gs.best_params_)
+
+# テストデータセットを用いて、選択されたモデルの性能を評価
+# ベストなモデルの取得
+clf = gs.best_estimator_
+# 最良モデルでSVMを実行
+# clf.fit(X_train, y_train)
+# スコアを算出
+print('Test accuracy: %.3f' % clf.score(X_test, y_test))
