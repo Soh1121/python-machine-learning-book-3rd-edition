@@ -26,6 +26,8 @@ from sklearn.svm import SVC
 from sklearn.model_selection import GridSearchCV
 # 決定木を用いるためにscikit-learnのtreeモジュールからDecisionTreeClassifierをインポート
 from sklearn.tree import DecisionTreeClassifier
+# 混同行列を生成するためにscikit-learnのmetricsモジュールからconfusion_matrixをインポート
+from sklearn.metrics import confusion_matrix
 # 要素数をカウントするためなどにnumpyをnpとしてインポート
 import numpy as np
 # プロットを作成するためにmatplotlibのpyplotモジュールをpltとしてインポート
@@ -192,12 +194,21 @@ param_grid = [{'svc__C': param_range, 'svc__kernel': ['linear']},
 # scores = cross_val_score(gs, X_train, y_train, scoring='accuracy', cv=5)
 # print('CV accuracy: %.3f +/- %.3f' % (np.mean(scores), np.std(scores)))
 
-# 決定木で深さパラメータのみチューニング
-# ハイパーパラメータ値として決定木の深さパラメータを指定し、
-# グリッドサーチを行うGridSearchCVクラスをインスタンス化
-gs = GridSearchCV(estimator=DecisionTreeClassifier(random_state=0),
-                  param_grid=[{'max_depth': [1, 2, 3, 4, 5, 6, 7, None]}],
-                  scoring='accuracy', cv=2)
-# 性能を確認
-scores = cross_val_score(gs, X_train, y_train, scoring='accuracy', cv=5)
-print('CV accuracy: %.3f +/- %.3f' % (np.mean(scores), np.std(scores)))
+# # 決定木で深さパラメータのみチューニング
+# # ハイパーパラメータ値として決定木の深さパラメータを指定し、
+# # グリッドサーチを行うGridSearchCVクラスをインスタンス化
+# gs = GridSearchCV(estimator=DecisionTreeClassifier(random_state=0),
+#                   param_grid=[{'max_depth': [1, 2, 3, 4, 5, 6, 7, None]}],
+#                   scoring='accuracy', cv=2)
+# # 性能を確認
+# scores = cross_val_score(gs, X_train, y_train, scoring='accuracy', cv=5)
+# print('CV accuracy: %.3f +/- %.3f' % (np.mean(scores), np.std(scores)))
+
+# 混同行列を算出
+# SVMをパイプラインで学習
+pipe_svc.fit(X_train, y_train)
+# 予測値を算出
+y_pred = pipe_svc.predict(X_test)
+# テストと予測のデータから混同行列を生成
+confmat = confusion_matrix(y_true=y_test, y_pred=y_pred)
+print(confmat)
