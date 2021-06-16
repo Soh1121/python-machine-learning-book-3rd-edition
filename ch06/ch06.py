@@ -30,6 +30,8 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import confusion_matrix
 # 適合率、再現率、F値を算出するために、scikit-learnのmetricsモジュールからprecision_scoreとrecall_score、f1_scoreをインポート
 from sklearn.metrics import precision_score, recall_score, f1_score
+# グリッドサーチでカスタムスコアを利用するためにscikit-learnのmetricsモジュールからmake_scorerをインポート
+from sklearn.metrics import make_scorer
 # 要素数をカウントするためなどにnumpyをnpとしてインポート
 import numpy as np
 # プロットを作成するためにmatplotlibのpyplotモジュールをpltとしてインポート
@@ -230,10 +232,30 @@ y_pred = pipe_svc.predict(X_test)
 # plt.tight_layout()
 # plt.show()
 
-# 適合率、再現率、F1スコアを出力
-# 適合率を出力
-print('Precision: %.3f' % precision_score(y_true=y_test, y_pred=y_pred))
-# 再現率を出力
-print('Recall: %.3f' % recall_score(y_true=y_test, y_pred=y_pred))
-# F1スコアを出力
-print('F1: %.3f' % f1_score(y_true=y_test, y_pred=y_pred))
+# # 適合率、再現率、F1スコアを出力
+# # 適合率を出力
+# print('Precision: %.3f' % precision_score(y_true=y_test, y_pred=y_pred))
+# # 再現率を出力
+# print('Recall: %.3f' % recall_score(y_true=y_test, y_pred=y_pred))
+# # F1スコアを出力
+# print('F1: %.3f' % f1_score(y_true=y_test, y_pred=y_pred))
+
+# GridSearchCVで正解率以外の指標も使える
+# グリッドサーチの値を設定
+c_gamma_range = [0.01, 0.1, 1.0, 10.0]
+param_grid = [{'svc__C': c_gamma_range, 'svc__kernel': ['linear']},
+              {'svc__C': c_gamma_range, 'svc__gamma': c_gamma_range,
+               'svc__kernel': ['rbf']}]
+# カスタムの性能指標を設定
+scorer = make_scorer(f1_score, pos_label=0)
+# グリッドサーチのオブジェクトを生成
+gs = GridSearchCV(estimator=pipe_svc,
+                  param_grid=param_grid,
+                  scoring=scorer,
+                  cv=10, n_jobs=-1)
+# グリッドサーチを実施
+gs.fit(X_train, y_train)
+# 結果を出力
+print(gs.best_score_)
+# パラメータを出力
+print(gs.best_params_)
