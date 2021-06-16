@@ -28,6 +28,8 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.tree import DecisionTreeClassifier
 # 混同行列を生成するためにscikit-learnのmetricsモジュールからconfusion_matrixをインポート
 from sklearn.metrics import confusion_matrix
+# 適合率、再現率、F値を算出するために、scikit-learnのmetricsモジュールからprecision_scoreとrecall_score、f1_scoreをインポート
+from sklearn.metrics import precision_score, recall_score, f1_score
 # 要素数をカウントするためなどにnumpyをnpとしてインポート
 import numpy as np
 # プロットを作成するためにmatplotlibのpyplotモジュールをpltとしてインポート
@@ -210,20 +212,28 @@ pipe_svc.fit(X_train, y_train)
 # 予測値を算出
 y_pred = pipe_svc.predict(X_test)
 # テストと予測のデータから混同行列を生成
-confmat = confusion_matrix(y_true=y_test, y_pred=y_pred)
-# print(confmat)
+# confmat = confusion_matrix(y_true=y_test, y_pred=y_pred)
+# # print(confmat)
 
-# 混同行列を図示
-# 図のサイズを指定
-fig, ax = plt.subplots(figsize=(2.5, 2.5))
-# matshow関数で行列からヒートマップを作成
-ax.matshow(confmat, cmap=plt.cm.Blues, alpha=0.3)
-for i in range(confmat.shape[0]):       # クラス0の繰り返し処理
-    for j in range(confmat.shape[1]):   # クラス1の繰り返し処理
-        ax.text(x=j, y=i, s=confmat[i, j], va='center', ha='center')    # 件数を表示
-# 軸のラベルを設定
-plt.xlabel('Predicted label')
-plt.ylabel('True label')
-# プロットを表示
-plt.tight_layout()
-plt.show()
+# # 混同行列を図示
+# # 図のサイズを指定
+# fig, ax = plt.subplots(figsize=(2.5, 2.5))
+# # matshow関数で行列からヒートマップを作成
+# ax.matshow(confmat, cmap=plt.cm.Blues, alpha=0.3)
+# for i in range(confmat.shape[0]):       # クラス0の繰り返し処理
+#     for j in range(confmat.shape[1]):   # クラス1の繰り返し処理
+#         ax.text(x=j, y=i, s=confmat[i, j], va='center', ha='center')    # 件数を表示
+# # 軸のラベルを設定
+# plt.xlabel('Predicted label')
+# plt.ylabel('True label')
+# # プロットを表示
+# plt.tight_layout()
+# plt.show()
+
+# 適合率、再現率、F1スコアを出力
+# 適合率を出力
+print('Precision: %.3f' % precision_score(y_true=y_test, y_pred=y_pred))
+# 再現率を出力
+print('Recall: %.3f' % recall_score(y_true=y_test, y_pred=y_pred))
+# F1スコアを出力
+print('F1: %.3f' % f1_score(y_true=y_test, y_pred=y_pred))
