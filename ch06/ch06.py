@@ -346,3 +346,7 @@ X_upsampled, y_upsampled = resample(X_imb[y_imb == 1],
 # アップサンプリングしたデータを結合
 X_bal = np.vstack((X[y == 0], X_upsampled))
 y_bal = np.hstack((y[y == 0], y_upsampled))
+
+# すべて0で予測した場合
+y_pred = np.zeros(y_bal.shape[0])
+print(np.mean(y_pred == y_bal) * 100)
