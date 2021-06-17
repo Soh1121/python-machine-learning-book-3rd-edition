@@ -331,9 +331,9 @@ y_imb = np.hstack((y[y == 0], y[y == 1][:40]))
 y_pred = np.zeros(y_imb.shape[0])
 np.mean(y_pred == y_imb) * 100
 
-# 少数派クラスのアップサンプリング
-# 現在の少数派クラスのサンプル数を確認
-print('Number of class 1 examples before:', X_imb[y_imb == 1].shape[0])
+# # 少数派クラスのアップサンプリング
+# # 現在の少数派クラスのサンプル数を確認
+# print('Number of class 1 examples before:', X_imb[y_imb == 1].shape[0])
 
 # データ点の個数がクラス0とおなじになるまで新しいデータ点を復元抽出
 X_upsampled, y_upsampled = resample(X_imb[y_imb == 1],
@@ -341,4 +341,8 @@ X_upsampled, y_upsampled = resample(X_imb[y_imb == 1],
                                     replace=True,
                                     n_samples=X_imb[y_imb == 0].shape[0],
                                     random_state=123)
-print('Number of class 1 examples after:', X_upsampled.shape[0])
+# print('Number of class 1 examples after:', X_upsampled.shape[0])
+
+# アップサンプリングしたデータを結合
+X_bal = np.vstack((X[y == 0], X_upsampled))
+y_bal = np.hstack((y[y == 0], y_upsampled))
