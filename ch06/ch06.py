@@ -34,6 +34,8 @@ from sklearn.metrics import precision_score, recall_score, f1_score
 from sklearn.metrics import make_scorer
 # ROC曲線を算出し、曲線下面積を算出するためにscikit-learnのmetricsモジュールからroc_curve, aucをインポート
 from sklearn.metrics import roc_curve, auc
+# データをリサンプリングするためにscikit-learnのutilsモジュールからresampleをインポート
+from sklearn.utils import resample
 # 要素数をカウントするためなどにnumpyをnpとしてインポート
 import numpy as np
 # プロットを作成するためにmatplotlibのpyplotモジュールをpltとしてインポート
@@ -313,8 +315,30 @@ y_pred = pipe_svc.predict(X_test)
 # plt.tight_layout()
 # plt.show()
 
-# マイクロ平均を性能指標に指定
-pre_scorer = make_scorer(score_func=precision_score,
-                         pos_label=1,
-                         greater_is_better=True,
-                         average='micro')
+# # マイクロ平均を性能指標に指定
+# pre_scorer = make_scorer(score_func=precision_score,
+#                          pos_label=1,
+#                          greater_is_better=True,
+#                          average='micro')
+
+# クラスの不均衡に対する処理を検証
+# 不均衡なデータセットを作成
+# 良性腫瘍のすべてと悪性腫瘍の最初の40個をデータとして準備
+X_imb = np.vstack((X[y == 0], X[y == 1][:40]))
+y_imb = np.hstack((y[y == 0], y[y == 1][:40]))
+
+# すべて0で予測した場合
+y_pred = np.zeros(y_imb.shape[0])
+np.mean(y_pred == y_imb) * 100
+
+# 少数派クラスのアップサンプリング
+# 現在の少数派クラスのサンプル数を確認
+print('Number of class 1 examples before:', X_imb[y_imb == 1].shape[0])
+
+# データ点の個数がクラス0とおなじになるまで新しいデータ点を復元抽出
+X_upsampled, y_upsampled = resample(X_imb[y_imb == 1],
+                                    y_imb[y_imb == 1],
+                                    replace=True,
+                                    n_samples=X_imb[y_imb == 0].shape[0],
+                                    random_state=123)
+print('Number of class 1 examples after:', X_upsampled.shape[0])
