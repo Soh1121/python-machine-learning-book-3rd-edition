@@ -11,10 +11,26 @@ from sklearn.base import BaseEstimator
 from sklearn.base import ClassifierMixin
 # クラスラベルが0から始まるようにエンコードするため、LabelEncoderをインポートする
 from sklearn.preprocessing import LabelEncoder
-
-from sklearn.base import clone
 # アンサンブルの個々の分類機のパラメータにアクセスできるようにするため、_name_estimatorsをインポートする
 from sklearn.pipeline import _name_estimators
+# 試しに機械学習を実行するため、sklearnからdatasetsをインポートする
+from sklearn import datasets
+# テストデータセットに分割するためにsklearnのmodel_selectionクラスからtrain_test_splitメソッドをインポートする
+from sklearn.model_selection import train_test_split
+# ロジスティック回帰を用いるため、sklearnのlinear_modelクラスからLogisticRegressionをインポートする
+from sklearn.linear_model import LogisticRegression
+# 決定木分類器を用いるため、sklearnのtreeクラスからDecisionTreeClassifierをインポートする
+from sklearn.tree import DecisionTreeClassifier
+# k最近傍法分類器を用いるため、sklearnのneighborsクラスからKNeighborsClassifierをインポートする
+from sklearn.neighbors import KNeighborsClassifier
+# パイプラインを構築するためsklearnのpipelineクラスからPipelineをインポートする
+from sklearn.pipeline import Pipeline
+# 標準化を用いるためsklearnのpreprocessingからStandardScalerをインポートする
+from sklearn.preprocessing import StandardScaler
+# 分割交差検証を使うため、sklearnのmodel_selectionクラスから、cross_val_scoreをインポートする
+from sklearn.model_selection import cross_val_score
+
+from sklearn.base import clone
 
 
 def ensemble_error(n_classifier, error):
@@ -81,7 +97,7 @@ class MajorityVoteClassifier(BaseEstimator, ClassifierMixin):
         self.classifiers_ = []
         for clf in self.classifiers:
             fitted_clf = clone(clf).fit(X, self.labelenc_.transform(y))
-            self.classifiers_append(fitted_clf)
+            self.classifiers_.append(fitted_clf)
         return self
 
     def predict(self, X):
@@ -100,8 +116,7 @@ class MajorityVoteClassifier(BaseEstimator, ClassifierMixin):
         """
         if self.vote == 'probability':
             maj_vote = np.argmax(self.predict_proba(X), axis=1)
-        else: # 'classlabel'での多数決
-
+        else:  # 'classlabel'での多数決
             # clf.predict呼び出しの結果を収集
             predictions = np.asarray([clf.predict(X)
                                       for clf in self.classifiers_]).T
@@ -174,3 +189,43 @@ class MajorityVoteClassifier(BaseEstimator, ClassifierMixin):
 # plt.grid(alpha=0.5)
 # # プロットを表示
 # plt.show()
+
+
+iris = datasets.load_iris()
+X, y = iris.data[50:, [1, 2]], iris.target[50:]
+le = LabelEncoder()
+y = le.fit_transform(y)
+X_train, X_test, y_train, y_test = \
+    train_test_split(X, y, test_size=0.5, random_state=1, stratify=y)
+clf1 = LogisticRegression(penalty='l2', C=0.001,
+                          solver='lbfgs',
+                          random_state=1)
+clf2 = DecisionTreeClassifier(max_depth=1,
+                              criterion='entropy',
+                              random_state=0)
+clf3 = KNeighborsClassifier(n_neighbors=1,
+                            p=2,
+                            metric='minkowski')
+pipe1 = Pipeline([['sc', StandardScaler()],
+                  ['clf', clf1]])
+pipe3 = Pipeline([['sc', StandardScaler()],
+                  ['clf', clf3]])
+clf_labels = ['Logistic regression', 'Decision tree', 'KNN']
+print('10-fold cross validation:\n')
+# for clf, label in zip([pipe1, clf2, pipe3], clf_labels):
+#     scores = cross_val_score(estimator=clf,
+#                              X=X_train,
+#                              y=y_train,
+#                              cv=10,
+#                              scoring='roc_auc')
+#     print("ROC AUC: %0.2f (+/- %0.2f) [%s]" % (scores.mean(), scores.std(), label))
+mv_clf = MajorityVoteClassifier(classifiers=[pipe1, clf2, pipe3])
+clf_labels += ['Majority voting']
+all_clf = [pipe1, clf2, pipe3, mv_clf]
+for clf, label in zip(all_clf, clf_labels):
+    scores = cross_val_score(estimator=clf,
+                             X=X_train,
+                             y=y_train,
+                             cv=10,
+                             scoring='roc_auc')
+    print("ROC AUC: %0.2f (+/- %0.2f) [%s]" % (scores.mean(), scores.std(), label))
