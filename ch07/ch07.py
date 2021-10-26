@@ -29,6 +29,10 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 # 分割交差検証を使うため、sklearnのmodel_selectionクラスから、cross_val_scoreをインポートする
 from sklearn.model_selection import cross_val_score
+# ROC曲線を計算するために、sklearnのmetricsクラスから、roc_curveメソッドをインポートする
+from sklearn.metrics import roc_curve
+# 正解率を計算するために、sklearnのmetricsクラスから、aucメソッドをインポートする
+from sklearn.metrics import auc
 
 from sklearn.base import clone
 
@@ -229,3 +233,27 @@ for clf, label in zip(all_clf, clf_labels):
                              cv=10,
                              scoring='roc_auc')
     print("ROC AUC: %0.2f (+/- %0.2f) [%s]" % (scores.mean(), scores.std(), label))
+
+colors = ['black', 'orange', 'blue', 'green']
+linestyles = [':', '--', '-.', '-']
+for clf, label, clr, ls in zip(all_clf, clf_labels, colors, linestyles):
+    # 陽性クラスのラベルは1であることが前提
+    y_pred = clf.fit(X_train, y_train).predict_proba(X_test)[:, 1]
+    fpr, tpr, thresholds = roc_curve(y_true=y_test, y_score=y_pred)
+    roc_auc = auc(x=fpr, y=tpr)
+    plt.plot(fpr, tpr,
+             color=clr,
+             linestyle=ls,
+             label='%s (auc = %0.2f)' % (label, roc_auc))
+
+plt.legend(loc='lower right')
+plt.plot([0, 1], [0, 1],
+         linestyle='--',
+         color='gray',
+         linewidth=2)
+plt.xlim([-0.1, 1.1])
+plt.ylim([-0.1, 1.1])
+plt.grid(alpha=0.5)
+plt.xlabel('False positive rate (FPR)')
+plt.ylabel('True positive rate (TPR)')
+plt.show()
