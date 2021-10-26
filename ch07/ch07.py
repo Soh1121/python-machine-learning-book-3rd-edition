@@ -33,6 +33,8 @@ from sklearn.model_selection import cross_val_score
 from sklearn.metrics import roc_curve
 # 正解率を計算するために、sklearnのmetricsクラスから、aucメソッドをインポートする
 from sklearn.metrics import auc
+# 0, 1の組み合わせを生成するためにitertoolsからproductメソッドをインポートする
+from itertools import product
 
 from sklearn.base import clone
 
@@ -134,7 +136,7 @@ class MajorityVoteClassifier(BaseEstimator, ClassifierMixin):
                 arr=predictions)
 
             # 各データ点に確率の最大値を与えるクラスラベルを抽出
-            maj_vote - self.lablenc_.inverse_transform(maj_vote)
+            maj_vote = self.labelenc_.inverse_transform(maj_vote)
             return maj_vote
 
     def predict_proba(self, X):
@@ -234,26 +236,71 @@ for clf, label in zip(all_clf, clf_labels):
                              scoring='roc_auc')
     print("ROC AUC: %0.2f (+/- %0.2f) [%s]" % (scores.mean(), scores.std(), label))
 
-colors = ['black', 'orange', 'blue', 'green']
-linestyles = [':', '--', '-.', '-']
-for clf, label, clr, ls in zip(all_clf, clf_labels, colors, linestyles):
-    # 陽性クラスのラベルは1であることが前提
-    y_pred = clf.fit(X_train, y_train).predict_proba(X_test)[:, 1]
-    fpr, tpr, thresholds = roc_curve(y_true=y_test, y_score=y_pred)
-    roc_auc = auc(x=fpr, y=tpr)
-    plt.plot(fpr, tpr,
-             color=clr,
-             linestyle=ls,
-             label='%s (auc = %0.2f)' % (label, roc_auc))
+# colors = ['black', 'orange', 'blue', 'green']
+# linestyles = [':', '--', '-.', '-']
+# for clf, label, clr, ls in zip(all_clf, clf_labels, colors, linestyles):
+#     # 陽性クラスのラベルは1であることが前提
+#     y_pred = clf.fit(X_train, y_train).predict_proba(X_test)[:, 1]
+#     fpr, tpr, thresholds = roc_curve(y_true=y_test, y_score=y_pred)
+#     roc_auc = auc(x=fpr, y=tpr)
+#     plt.plot(fpr, tpr,
+#              color=clr,
+#              linestyle=ls,
+#              label='%s (auc = %0.2f)' % (label, roc_auc))
 
-plt.legend(loc='lower right')
-plt.plot([0, 1], [0, 1],
-         linestyle='--',
-         color='gray',
-         linewidth=2)
-plt.xlim([-0.1, 1.1])
-plt.ylim([-0.1, 1.1])
-plt.grid(alpha=0.5)
-plt.xlabel('False positive rate (FPR)')
-plt.ylabel('True positive rate (TPR)')
+# plt.legend(loc='lower right')
+# plt.plot([0, 1], [0, 1],
+#          linestyle='--',
+#          color='gray',
+#          linewidth=2)
+# plt.xlim([-0.1, 1.1])
+# plt.ylim([-0.1, 1.1])
+# plt.grid(alpha=0.5)
+# plt.xlabel('False positive rate (FPR)')
+# plt.ylabel('True positive rate (TPR)')
+# plt.show()
+
+# 標準化を行うため、Scalerを用意
+sc = StandardScaler()
+# 学習データに標準化を適用
+X_train_std = sc.fit_transform(X_train)
+# 決定領域を描画する最小値、最大値を生成
+x_min = X_train_std[:, 0].min() - 1
+x_max = X_train_std[:, 0].max() + 1
+y_min = X_train_std[:, 1].min() - 1
+y_max = X_train_std[:, 1].max() + 1
+# グリッドポイントを生成
+xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.1),
+                     np.arange(y_min, y_max, 0.1))
+# 描画領域を2行2列に分割
+f, axarr = plt.subplots(nrows=2, ncols=2,
+                        sharex='col',
+                        sharey='row',
+                        figsize=(7, 5))
+# 決定領域のプロット、青や赤の散布図の作成などを実行
+# 変数idxは各分類器を描画する行と列の位置を表すタプル
+for idx, clf, tt in zip(product([0, 1], [0, 1]), all_clf, clf_labels):
+    clf.fit(X_train_std, y_train)
+    Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+    axarr[idx[0], idx[1]].contourf(xx, yy, Z, alpha=0.3)
+    axarr[idx[0], idx[1]].scatter(X_train_std[y_train==0, 0],
+                                  X_train_std[y_train==0, 1],
+                                  c='blue',
+                                  marker='^',
+                                  s=50)
+    axarr[idx[0], idx[1]].scatter(X_train_std[y_train==1, 0],
+                                  X_train_std[y_train==1, 1],
+                                  c='green',
+                                  marker='o',
+                                  s=50)
+    axarr[idx[0], idx[1]].set_title(tt)
+
+plt.text(-.35, -5.,
+         s='Sepal width [standardized]',
+         ha='center', va='center', fontsize=12)
+plt.text(-12.5, 4.5,
+         s='Petal length [standardized]',
+         ha='center', va='center',
+         fontsize=12, rotation=90)
 plt.show()
