@@ -35,6 +35,8 @@ from sklearn.metrics import roc_curve
 from sklearn.metrics import auc
 # 0, 1の組み合わせを生成するためにitertoolsからproductメソッドをインポートする
 from itertools import product
+# ロジスティック回帰分類器の逆正則化パラメータと決定木の深さをチューニングするため、sklearnのmodel_selectionクラスから、GridSearchCVをインポートする
+from sklearn.model_selection import GridSearchCV
 
 from sklearn.base import clone
 
@@ -305,5 +307,23 @@ for clf, label in zip(all_clf, clf_labels):
 #          fontsize=12, rotation=90)
 # plt.show()
 
-# GridSearchCVオブジェクトの個々のパラメータを見てみる
-print(mv_clf.get_params())
+# # GridSearchCVオブジェクトの個々のパラメータを見てみる
+# print(mv_clf.get_params())
+
+params = {'decisiontreeclassifier__max_depth': [1, 2],
+          'pipeline-1__clf__C': [0.001, 0.1, 100.0]}
+grid = GridSearchCV(estimator=mv_clf,
+                    param_grid=params,
+                    cv=10,
+                    scoring='roc_auc')
+grid.fit(X_train, y_train)
+
+# 10分割交差検証をすることで、様々なハイパーパラメータ値の組み合わせとROC曲線の平均値を出力
+for r, _ in enumerate(grid.cv_results_['mean_test_score']):
+    print("%0.3f +/- %0.2f %r"
+          % (grid.cv_results_['mean_test_score'][r],
+             grid.cv_results_['std_test_score'][r] / 2.0,
+             grid.cv_results_['params'][r]))
+
+print('Best parameters: %s' % grid.best_params_)
+print('Accuracy: %.2f' % grid.best_score_)
